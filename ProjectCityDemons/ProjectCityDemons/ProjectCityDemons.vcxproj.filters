@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c7fc7b2c-5f85-4956-b8b9-569c63c53329}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{9eb17455-df7c-4fe8-823b-d3c48068e139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Bloom">
+      <UniqueIdentifier>{5b40f9a1-487c-46af-8600-ddca3752fec2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Particles">
+      <UniqueIdentifier>{a8b38f99-1552-4131-ba88-2772d15ed3a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Toon">
+      <UniqueIdentifier>{b8a73f96-3a17-44a7-bff4-e34575cbf6c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFunctions">
+      <UniqueIdentifier>{1c00278d-1f20-460b-a42d-f2890cf58112}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="character.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="hitbox.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="controller.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLightObj.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="FmodWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="char_blue.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="char_red.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>GameFunctions</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="character.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="hitbox.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="controller.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightObj.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FmodWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="char_blue.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="char_red.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>GameFunctions</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\GreyScalePost.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PassThrough.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Phong.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\StaticGeometry.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Bloom\BloomComposite.frag">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="Assets\Shaders\Bloom\BloomHighPass.frag">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="Assets\Shaders\Bloom\BlurHorizontal.frag">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="Assets\Shaders\Bloom\BlurVertical.frag">
+      <Filter>Shaders\Bloom</Filter>
+    </None>
+    <None Include="Assets\Shaders\Particles\BillBoard.frag">
+      <Filter>Shaders\Particles</Filter>
+    </None>
+    <None Include="Assets\Shaders\Particles\BillBoard.geom">
+      <Filter>Shaders\Particles</Filter>
+    </None>
+    <None Include="Assets\Shaders\Particles\BillBoard.vert">
+      <Filter>Shaders\Particles</Filter>
+    </None>
+    <None Include="Assets\Shaders\GBufferPass.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\DeferredLighting.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\Toon\Sobel.frag">
+      <Filter>Shaders\Toon</Filter>
+    </None>
+    <None Include="Assets\Shaders\AnimationShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PointLight.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\HudShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\PassThroughLight.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\AdShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\NetShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
