@@ -2,6 +2,13 @@
 #include <GL\glew.h>
 #include <string>
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
+
 class Texture
 {
 public:

@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-
 //Must be included before the other includes since these include glew.h and its picky
 #include "ShaderProgram.h"
 #include "Mesh.h"
@@ -12,29 +11,28 @@
 #include "Camera.h"
 #include "FmodWrapper.h"
 #include "FMOD/inc/fmod.hpp"
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-
-#include "char_red.h"
 #include "char_blue.h"
 #include "InputHandler.h"
 #pragma comment(lib, "Xinput9_1_0.lib") 
-
 #include "Timer.h"
 
 //debugging
 #include <chrono>
 #include <iostream>
 
-
-
-
 //vsync
 #include "include/wglext.h"
 
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
 
 #define WINDOW_WIDTH			1280
 #define WINDOW_HEIGHT			720
@@ -85,7 +83,7 @@ public:
 	void mouseMoved(int x, int y);
 
 	/* Data Members */
-	Timer *updateTimer	= nullptr;
+	Timer *updateTimer = nullptr;
 	float TotalGameTime = 0.0f;
 
 	/// PROGRAMS ///
@@ -191,7 +189,7 @@ public:
 	ParticleEffect NinjaPetals;
 	ParticleEffect NinjaPetals2;
 	ParticleEffect DustLand;
-	ParticleEffect DustDashL;	
+	ParticleEffect DustDashL;
 	ParticleEffect DustDashR;
 
 	//new
@@ -246,7 +244,7 @@ public:
 	float floor;
 
 	//controller
-	InputHandler* Controllers; 
+	InputHandler* Controllers;
 
 	int score1;
 	int score2;
@@ -259,7 +257,7 @@ public:
 
 	bool isNinja1 = false;
 	bool isNinja2 = false;
-	
+
 	///Sound Stuff
 	bool soundPlaying = false;
 	bool p1Jump1 = false;
@@ -301,7 +299,7 @@ public:
 	FMOD::Channel* ninjaChannel = NULL;
 	FMOD::Channel* otherChannel = NULL;
 	FMOD::Channel* selectionChannel = NULL;
-	
+
 	FMOD::DSP *pitchShift;
 	FMOD::DSP *highPass;
 

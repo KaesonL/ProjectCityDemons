@@ -1,5 +1,12 @@
 #include "FrameBuffer.h"
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
+
 //The int represents the number of colour attachments the class should expect to have, to allocate the right amount of space
 FrameBuffer::FrameBuffer(unsigned numColorAttachments)
 {

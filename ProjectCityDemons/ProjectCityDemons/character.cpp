@@ -1,6 +1,10 @@
 #include "character.h"
 
 /*
+Particall by John Wang
+*/
+
+/*
 Keys:
 $$$ - Particle Signal
 
@@ -17,9 +21,7 @@ $$$ - Particle Signal
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 
 Character::Character(const std::string& bodyName, const std::string& textureName){
-
 	//Nothing Here.  DO NOT MAKE CHARACTER
-
 }
 
 void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
@@ -34,7 +36,6 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 			facingRight = false;
 		}
 	}
-
 
 	//max health
 	if (currentHealth > maxHealth) {

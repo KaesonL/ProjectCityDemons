@@ -1,5 +1,12 @@
 #include "object.h"
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
+
 Object::Object(const std::string& bodyName, const std::string& textureName, std::string _name, bool _blend) {
 
 	name = _name;

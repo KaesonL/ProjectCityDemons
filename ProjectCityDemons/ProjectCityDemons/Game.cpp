@@ -2,6 +2,14 @@
 #include "Utilities.h"
 
 /*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+John Wang
+*/
+
+/*
 Keys:
 $$$ - Particle Signal
 
@@ -543,9 +551,6 @@ void Game::initializeGame()
 	
 	NinjaPetals.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals.png");
 	NinjaPetals2.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals2.png");
-	
-	NinjaPetals.mainField.init();
-	NinjaPetals2.mainField.init();
 
 	knightLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/fire2.png");
 	knightRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/fire2.png");
@@ -928,6 +933,8 @@ void Game::initializeGame()
 	leftWall = -25;
 	floor = 0;
 
+	//toon shading ON
+	toonActive = true;
 }
 
 
@@ -2024,14 +2031,6 @@ void Game::updateScene()
 	KnightUltFX.Update(deltaTime);
 	NinjaUltFX1.Update(deltaTime);
 	NinjaUltFX2.Update(deltaTime);
-
-	//Vect Fields//
-	glm::vec2 playerTransform1 = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().y);
-	glm::vec2 playerTransform2 = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().y);
-
-	NinjaPetals.mainField.update(playerTransform1, players[0]->movementDir, playerTransform2, players[1]->movementDir);
-	NinjaPetals2.mainField.update(playerTransform1, players[0]->movementDir, playerTransform1, players[1]->movementDir);
-	//cout << playerTransform1.x << "," << playerTransform1.y << endl;
 
 	//Sound Effects//
 	p1Pos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };

@@ -1,6 +1,14 @@
 #include "ParticleEffect.h"
 #include "Random.h"
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+John Wang
+*/
+
 #define BUFFER_OFFSET(i) ((char *)0 + (i))
 
 ParticleEffect::ParticleEffect()
@@ -265,13 +273,6 @@ void ParticleEffect::Update(float elapsed)
 			{
 					_Particles.Velocities[i] += glm::vec3(RandomRangef(-1.0f, 1.0f), RandomRangef(-1.0f, 1.0f),0) * noiseStrength;
 				_Particles.frequency[i] = 0;
-			}
-
-			//adds feild weight if exists
-			if (mainField.used) {
-				glm::vec2 totalWeight = mainField.totalWeight(_Particles.Positions[i]);
-				_Particles.Velocities[i] *= 0.97f;												//remember to add drag ######################################
-				_Particles.Velocities[i] += glm::vec3(totalWeight, 0.0f);
 			}
 
 			//physics update

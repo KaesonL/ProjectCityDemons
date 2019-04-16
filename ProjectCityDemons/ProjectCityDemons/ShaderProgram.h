@@ -1,9 +1,15 @@
 #pragma once
 #include <GL\glew.h>
-
 #include <glm/glm.hpp>
 #include <GLM\gtx\transform.hpp>
 #include <string>
+
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
 
 class ShaderProgram
 {

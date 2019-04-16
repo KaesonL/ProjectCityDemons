@@ -5,11 +5,16 @@
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include <vector>
-//#include "hitbox.h"
 #include <iostream>
 #include "Transform.h"
 
-//Will be the parent class for all other objects
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
+
 class Object {
 
 public:

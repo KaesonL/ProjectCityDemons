@@ -1,8 +1,14 @@
 #include "ShaderProgram.h"
-
 #include<vector>
 #include <fstream>
 #include<iostream>
+
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
 
 ShaderProgram::ShaderProgram()
 {

@@ -2,8 +2,13 @@
 #include "Mesh.h"
 #include <fstream>
 #include <iostream>
-//#include <MiniMath\Core.h>
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
 
 #define CHAR_BUFFER_SIZE 128
 #define BUFFER_OFFSET(i) ((char *)0 + (i))

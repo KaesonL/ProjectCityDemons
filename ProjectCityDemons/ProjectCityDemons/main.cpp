@@ -2,8 +2,14 @@
 #include <windows.h>
 #include <iostream>
 #include "Game.h"
-
 #include <GL\freeglut.h>
+
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
 
 const int FRAME_DELAY_SPRITE = 1000 / FRAMES_PER_SECOND;
 

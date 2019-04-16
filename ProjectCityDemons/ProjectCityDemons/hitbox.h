@@ -1,13 +1,9 @@
 #pragma once
-//#include <SDL/SDL.h>
 #include <glm/glm.hpp>
 #include <GLM\gtx\transform.hpp>
 #include "mesh.h"
-//#include "shader.h"
 #include "texture.h"
-//#include "transform.h"
 #include <vector>
-//#include "camera.h"
 #include "Transform.h"
 
 

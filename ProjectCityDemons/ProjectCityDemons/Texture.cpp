@@ -1,7 +1,13 @@
 #include "Texture.h"
 #include "SOIL\SOIL.h"
-
 #include <iostream>
+
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
 
 Texture::~Texture()
 {

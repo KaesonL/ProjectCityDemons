@@ -127,8 +127,6 @@ public:
 			Character::hit(hitBy);
 	}
 
-	int storedCharge;
-
 	void update(int t, InputHandler* inputs, unsigned int playerNum) {
 		
 		Character::update(t, inputs, playerNum);

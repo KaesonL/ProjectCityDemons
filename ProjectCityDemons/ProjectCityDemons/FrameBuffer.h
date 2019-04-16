@@ -1,6 +1,13 @@
 #pragma once
 #include <GL\glew.h>
 
+/*
+Credit to:
+Emilian Cioca
+Gil Robern
+Jessica Le
+*/
+
 //Frame bufferes can only have one depth texture but can have multiple colour textures
 class FrameBuffer
 {

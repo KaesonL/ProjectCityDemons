@@ -30,14 +30,12 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	aniSpeeds[ACTION_A_CLEAR] = 6.0f;
 	aniSpeeds[ACTION_A_CLEAR_ALT] = 4.0f;
 
-	if (!(bodyTexture.Load(textureName)))//"./Assets/Textures/Sword.png"))
-	{
+	if (!(bodyTexture.Load(textureName))){
 		std::cout << "Character Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!(hurtTexture.Load("./Assets/Textures/hurt.png")))//"./Assets/Textures/Sword.png"))
-	{
+	if (!(hurtTexture.Load("./Assets/Textures/hurt.png"))){
 		std::cout << "Character Texture failed to load.\n";
 		system("pause");
 		exit(0);
@@ -46,8 +44,11 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 
 	aniTimer = 0.f;
 	index = 0;
+
 	//======================================================//
-		//ANIMATIONS
+						//ANIMATIONS
+	//======================================================//
+
 		///IDLE
 	int length = 8;//9
 	if (BASE_ANI_TOGGLE == false)
@@ -57,7 +58,6 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Idle/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Idle/pose" + std::to_string((int)((c + 1) % length)));
-
 		Mesh* idle = new Mesh();
 		idle->LoadFromFile(frame);
 		aniFrames[ACTION_IDLE].push_back(idle);
@@ -66,12 +66,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)//14
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Walk/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Walk/pose" + std::to_string((int)((c + 1) % length)));
-
 		Mesh* walk = new Mesh();
 		walk->LoadFromFile(frame);
 		aniFrames[ACTION_WALK].push_back(walk);
@@ -80,12 +78,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 2;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Squat/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Squat/pose" + std::to_string((int)((c + 1) % length)));
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_PREJUMP].push_back(jab);
@@ -94,12 +90,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 2;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Fall/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Fall/pose" + std::to_string((int)((c + 1) % length)));
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_FALL].push_back(jab);
@@ -108,8 +102,7 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 2;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Jump/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Jump/pose" + std::to_string((int)((c + 1) % length)));
@@ -117,7 +110,6 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_JUMP].push_back(jab);
-
 		Mesh* jab2 = new Mesh();
 		jab2->LoadFromFile(frame);
 		aniFrames[ACTION_JUMP2].push_back(jab2);
@@ -126,12 +118,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 3;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_aHurt/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_aHurt/pose" + std::to_string((int)((c + 1) % length)));
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_HIT].push_back(jab);
@@ -140,12 +130,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 3;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Hurt/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Hurt/pose" + std::to_string((int)((c + 1) % length)));
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_HIT_G].push_back(jab);
@@ -154,13 +142,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string((int)((c + 1) % length)));
-
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_INTIAL_DASH].push_back(jab);
@@ -170,12 +155,10 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c)
-	{
+{
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string((int)((c + 1) % length)));
-
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_DASH].push_back(jab);
@@ -184,20 +167,17 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	length = 1;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
-	for (int c = 0; c < length; ++c)
-	{
+	for (int c = 0; c < length; ++c){
 		std::vector<std::string> frame;
 		frame.push_back("./Assets/Models/Blue/_Run/pose" + std::to_string(c));
 		frame.push_back("./Assets/Models/Blue/_Run/pose" + std::to_string((int)((c + 1) % length)));
-
-
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_RUN].push_back(jab);
-
 	}
+
 	//==================================================================//
-	//ATTACKS
+								//ATTACKS
 	//==================================================================//
 	///gBasic
 	length = 3;
@@ -298,8 +278,11 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_G_METEOR_ALT_2].push_back(jab);
 	}
+
 	//==================================================================//
-	//AERIALS
+								//AERIALS
+	//==================================================================//
+
 	///aBasic
 	length = 5;
 	if (A_ATK_ANI_TOGGLE == false) length = 1;
@@ -382,7 +365,7 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 
 	//extra
 	std::vector<std::string> file;
-	file.push_back("./Assets/Models/KnightAnimations/IdlePoses/Idle" + std::to_string(0) );
+	file.push_back("./Assets/Models/Blue/_Idle/pose" + std::to_string(0) );
 	body.LoadFromFile(file);
 
 	//Set Physics
@@ -398,15 +381,12 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	scaleZ = 3.5f;
 
 	//apply Scale && Rotation
-	//glm::scale(transform, glm::vec3(scaleX, scaleY, scaleZ));
 	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
-	//glm::rotate(transform, 90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	transform.RotateY(90);
+	transform.RotateY(90);//turn to face side
 
-///==============================================================
-	//Set Attributes
-///==============================================================
-
+	//==============================================================
+	//					Set Attributes
+	//==============================================================
 	///Mass
 	mass = 9;
 	///Gravity Force on Character
@@ -435,8 +415,7 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	hitstun = 14;//10;
 	///amount of frames character is launched for when hit
 	hitframes = 10;
-
-	//hp
+	///Health Pool
 	currentHealth = 1000;
 	maxHealth = 1000;
 	greyHealth = 1000;
@@ -446,36 +425,30 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 	comboTimer = 0;
 	comboMaxTime = 120;//1 seconds times 60fps
 
-	//Set Starting Action
-	action = ACTION_FALL;//0 idle, 1 jumping
-	idle();
-
+	//hitbox visualization
 	std::vector<std::string> hitBox;
 	hitBox.push_back("./Assets/Models/Hitbox");
 	boxMesh.LoadFromFile(hitBox);
-	/*{
-		std::cout << "Character Model failed to load.\n";
-		system("pause");
-		exit(0);
-	}*/
-	if (!(boxTexture.Load("./Assets/Textures/redclear.png")))
-	{
+	if (!(boxTexture.Load("./Assets/Textures/redclear.png"))){
 		std::cout << "Knight Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!(shieldTexture.Load("./Assets/Textures/shield.png")))
-	{
+	if (!(shieldTexture.Load("./Assets/Textures/shield.png"))){
 		std::cout << "Knight Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
 
+	//hurtbox position initialization
 	Hitbox *hurt1 = new Hitbox(glm::vec3(0.0f, 3.0f, 0.0f), 3.0f);
 	hurtbox.push_back(hurt1);
 	Hitbox *hurt2 = new Hitbox(glm::vec3(0.0f, 1.0f, 0.0f), 3.0f);
 	hurtbox.push_back(hurt2);
 
+	//Set Starting Action
+	action = ACTION_FALL;
+	idle();
 }
 
 //=============================================================//
