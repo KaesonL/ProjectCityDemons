@@ -7,7 +7,7 @@ class charBlueDragon : public Character {
 
 public:
 	charBlueDragon() {}
-	charBlueDragon(const std::string& body, const std::string& texture);
+	charBlueDragon(const std::string& texture);
 
 	charBlueDragon(const charBlueDragon* copy) {
 		type = 1;

@@ -133,6 +133,7 @@ private:
 	float followForce = 0.1f;
 	float maxSpeed = 1.0f;
 
-	int r_cFrame;
-	int r_tFrames;
+	//rumble counter
+	int r_cFrame;//current frame
+	int r_tFrames;//target frames
 };

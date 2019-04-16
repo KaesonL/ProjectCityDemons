@@ -20,7 +20,7 @@ $$$ - Particle Signal
 #define HITBOX_TOGGLE		false	//visual hitboxes
 #define HURTBOX_TOGGLE		false	//visual hurtboxes
 
-Character::Character(const std::string& bodyName, const std::string& textureName){
+Character::Character(const std::string& textureName){
 	//Nothing Here.  DO NOT MAKE CHARACTER
 }
 
@@ -350,10 +350,18 @@ void Character::hit(Hitbox* hitBy) {
 	else
 		action = ACTION_HIT;
 
+	index = 0;
+	aniTimer = 0;
 	interuptable = false;
 	activeFrames = unsigned int(hitframes + hitstun + hitBy->getKnockback());//
 	currentFrame = 1;
 	currentHealth -= hitBy->getDamage();
+
+	if (currentHealth <= 0) {
+		dead = true;
+		greyHealth = 0;
+		//set launched
+	}
 }
 
 ///0-up, 1-left, 2-down, 3-right, 4-A, 5-B, 6-jump

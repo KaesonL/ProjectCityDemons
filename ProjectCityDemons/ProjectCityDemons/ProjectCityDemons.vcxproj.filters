@@ -141,5 +141,8 @@
     <ClInclude Include="hitbox.h">
       <Filter>Object Files\Primative</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

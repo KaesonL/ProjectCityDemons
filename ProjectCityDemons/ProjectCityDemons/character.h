@@ -38,7 +38,7 @@ public:
 	unsigned int type;
 
 	Character() {}
-	Character(const std::string& body, const std::string& texture);
+	Character(const std::string& texture);
 
 	Character(const Character* copy) {
 
@@ -232,6 +232,7 @@ public:
 	float currentHealth = 1000;//health
 	float maxHealth = 1000;//total health for character
 	float greyHealth = 1000;//health
+	bool dead = false;
 
 	float regenSpeed = 0.05f;
 	float greyDrainSpeed = 0.2f;

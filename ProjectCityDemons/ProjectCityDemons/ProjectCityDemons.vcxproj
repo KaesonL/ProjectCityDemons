@@ -107,6 +107,7 @@
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="PointLightObj.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />

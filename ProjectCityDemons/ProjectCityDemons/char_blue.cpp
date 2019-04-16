@@ -6,14 +6,14 @@
 #define A_ATK_ANI_TOGGLE	true	//aerials
 #define S_ATK_ANI_TOGGLE	true	//specials
 
-charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& textureName) {
+charBlueDragon::charBlueDragon(const std::string& textureName) {
 	type = 1;
 
 	for (int i = 0; i < 40; i++) {
 		aniSpeeds[i] = 7.0f;
 	}
 	aniSpeeds[ACTION_HIT] = 14.0f;
-	aniSpeeds[ACTION_HIT_G] = 14.0f;
+	aniSpeeds[ACTION_HIT_G] = 10.0f;
 	aniSpeeds[ACTION_FALL] = 40.0f;
 	aniSpeeds[ACTION_JUMP] = 4.0f;
 	aniSpeeds[ACTION_JUMP2] = 4.0f;
@@ -127,7 +127,7 @@ charBlueDragon::charBlueDragon(const std::string& bodyName, const std::string& t
 		aniFrames[ACTION_HIT].push_back(jab);
 	}
 	///hurt ground
-	length = 3;
+	length = 4;
 	if (BASE_ANI_TOGGLE == false)
 		length = 1;
 	for (int c = 0; c < length; ++c){

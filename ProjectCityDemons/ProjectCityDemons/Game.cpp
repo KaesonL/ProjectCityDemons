@@ -15,7 +15,6 @@ $$$ - Particle Signal
 
 */
 
-#define FULLSCREEN true
 #define VSYNC true
 
 Game::Game()
@@ -30,19 +29,17 @@ Game::~Game()
 {
 	delete updateTimer;
 
-	//StaticGeometry.UnLoad();
-	BloomHighPass.UnLoad();
-	BlurHorizontal.UnLoad();
-	BlurVertical.UnLoad();
-	BloomComposite.UnLoad();
-	GBufferPass.UnLoad();
-	DeferredLighting.UnLoad();
-	SobelPass.UnLoad();
-	AniShader.UnLoad();
-	PointLight.UnLoad();
-	ParticleProgram.UnLoad();
-	boxMesh.Unload();
-	boxTexture.Unload();
+	BloomHighPass->UnLoad();
+	BlurHorizontal->UnLoad();
+	BlurVertical->UnLoad();
+	BloomComposite->UnLoad();
+	GBufferPass->UnLoad();
+	DeferredLighting->UnLoad();
+	SobelPass->UnLoad();
+	AniShader->UnLoad();
+	PointLight->UnLoad();
+	ParticleProgram->UnLoad();
+
 	HudObj.Unload();
 	Overlay0.Unload();
 	Overlay1.Unload();
@@ -74,17 +71,14 @@ void Game::initializeGame()
 	//Only needs to be done once
 	glEnable(GL_DEPTH_TEST);
 	
-	//glutFullScreen();
 	InitFullScreenQuad();
-	if (FULLSCREEN)
-		glutFullScreen();
+
+	glutFullScreen();//if no fullscreen, comment out this line
 
 	//init vsync
 	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
 	PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT = NULL;
-
-	if (WGLExtensionSupported("WGL_EXT_swap_control"))
-	{
+	if (WGLExtensionSupported("WGL_EXT_swap_control")){
 		// Extension is supported, init pointers.
 		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 
@@ -117,43 +111,26 @@ void Game::initializeGame()
 	gameObjects.push_back(new Object("./Assets/Models/ninjaSides", "./Assets/Textures/ninjaSides.png", "ninja_sides"));
 	stage3_env_objs.push_back("ninja_sides");
 
-
-	//hitbox
-	hitboxObj = new Object("./Assets/Models/Hitbox", "./Assets/Textures/redclear.png", "hitbox", true);
-	
-
 	//Load All Main Menu Objects
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/titleScreen.png", "background", true));
-	if (FULLSCREEN)
 		menuObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		menuObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	menuObjects[0]->RotateY(90);
 	menuObjects[0]->setPosition(glm::vec3(0, -555, -1));
 	
 
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/startButton.png", "button1", true));
-	if (FULLSCREEN) 
 		menuObjects[1]->setScale(300.0f);
-	else 
-		menuObjects[1]->setScale(200.0f);
 	menuObjects[1]->RotateY(90.0f);
 	menuObjects[1]->setPosition(glm::vec3(570, -250, 0));
 
 
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/tutButton.png", "button2", true));
-	if (FULLSCREEN)
 		menuObjects[2]->setScale(300.0f);
-	else
-		menuObjects[2]->setScale(200.0f);
 	menuObjects[2]->RotateY(90.0f);
 	menuObjects[2]->setPosition(glm::vec3(570, -450, 0));
 
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/quitButton.png", "button3", true));
-	if (FULLSCREEN)
 		menuObjects[3]->setScale(300.0f);
-	else
-		menuObjects[3]->setScale(200.0f);
 	menuObjects[3]->RotateY(90.0f);
 	menuObjects[3]->setPosition(glm::vec3(570, -650, 0));
 
@@ -162,84 +139,57 @@ void Game::initializeGame()
 
 	///background image
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/selectback.png", "background", true));
-	if (FULLSCREEN)
 		cssObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		cssObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	cssObjects[0]->RotateY(90);
 	cssObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 	///knight Icon
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/KnightIcon.png", "knightIcon", true));
-	if (FULLSCREEN)
 		cssObjects[1]->setScale(120.0f);
-	else
-		cssObjects[1]->setScale(80.0f);
 	cssObjects[1]->RotateY(90.0f);
 	cssObjects[1]->setPosition(glm::vec3(-200, -100, 0));
 
 	///ninja Icon
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/NinjaIcon.png", "ninjaIcon", true));
-	if (FULLSCREEN)
 		cssObjects[2]->setScale(120.0f);
-	else
-		cssObjects[2]->setScale(80.0f);
 	cssObjects[2]->RotateY(90.0f);
 	cssObjects[2]->setPosition(glm::vec3(200, -100, 0));
 
 	///p1 Icon
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p1select.png", "p1Select", true));
-	if (FULLSCREEN)
 		cssObjects[3]->setScale(120.0f);
-	else
-		cssObjects[3]->setScale(80.0f);
 	cssObjects[3]->RotateY(90.0f);
 	cssObjects[3]->setPosition(glm::vec3(-200, -100, 2));
 
 	///p2 Icon
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p2select.png", "p2Select", true));
-	if (FULLSCREEN)
 		cssObjects[4]->setScale(120.0f);
-	else
-		cssObjects[4]->setScale(80.0f);
 	cssObjects[4]->RotateY(90.0f);
 	cssObjects[4]->setPosition(glm::vec3(200, -100, 1));
 
 
 	///p1 knight pic
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P1KnightPic.png", "p1KnightPic", true));
-	if (FULLSCREEN)
 		cssObjects[5]->setScale(300.0f);
-	else
-		cssObjects[5]->setScale(200.0f);
 	cssObjects[5]->RotateY(90.0f);
 	cssObjects[5]->setPosition(glm::vec3(-530, -550, 2));
 
 	///p2 knight pic
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P2KnightPic.png", "p2KnightPic", true));
-	if (FULLSCREEN)
 		cssObjects[6]->setScale(300.0f);
-	else
-		cssObjects[6]->setScale(200.0f);
 	cssObjects[6]->RotateY(90.0f);
 	cssObjects[6]->setPosition(glm::vec3(530, -550, 1));
 
 	///p1 ninja pic
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P1NinjaPic.png", "p1NinjaPic", true));
-	if (FULLSCREEN)
 		cssObjects[7]->setScale(300.0f);
-	else
-		cssObjects[7]->setScale(200.0f);
 	cssObjects[7]->RotateY(90.0f);
 	cssObjects[7]->setPosition(glm::vec3(-530, -550, 2));
 	cssObjects[7]->hide = true;
 
 	///p2 nijna pic
 	cssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/P2NinjaPic.png", "p2NinjaPic", true));
-	if (FULLSCREEN)
 		cssObjects[8]->setScale(300.0f);
-	else
-		cssObjects[8]->setScale(200.0f);
 	cssObjects[8]->RotateY(90.0f);
 	cssObjects[8]->setPosition(glm::vec3(530, -550, 1));
 	cssObjects[8]->hide = true;
@@ -247,289 +197,228 @@ void Game::initializeGame()
 
 ///background image
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/stageSelect.png", "background", true));
-	if (FULLSCREEN)
 		sssObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		sssObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	sssObjects[0]->RotateY(90);
 	sssObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 	///knight stage Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicCourtSelect.png", "courtIconDefault", true));
-	if (FULLSCREEN)
 		sssObjects[1]->setScale(120.0f);
-	else
-		sssObjects[1]->setScale(80.0f);
 	sssObjects[1]->RotateY(90.0f);
 	sssObjects[1]->setPosition(glm::vec3(-350, -500, 0));
 
 	///default stage Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightCourtSelect.png", "courtIconKnight", true));
-	if (FULLSCREEN)
 		sssObjects[2]->setScale(120.0f);
-	else
-		sssObjects[2]->setScale(80.0f);
 	sssObjects[2]->RotateY(90.0f);
 	sssObjects[2]->setPosition(glm::vec3(0, -500, 0));
 
 	///ninja stage Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaCourtSelect.png", "courtIconNinja", true));
-	if (FULLSCREEN)
 		sssObjects[3]->setScale(120.0f);
-	else
-		sssObjects[3]->setScale(80.0f);
 	sssObjects[3]->RotateY(90.0f);
 	sssObjects[3]->setPosition(glm::vec3(350, -500, 0));
 
 	///select Icon
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/p1select.png", "select", true));
-	if (FULLSCREEN)
 		sssObjects[4]->setScale(120.0f);
-	else
-		sssObjects[4]->setScale(80.0f);
 	sssObjects[4]->RotateY(90.0f);
 	sssObjects[4]->setPosition(glm::vec3(-350, -500, 2));
 
 	///basic court pic
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/basicStage.png", "courtPicDefault", true));
-	if (FULLSCREEN)
 		sssObjects[5]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
-	else
-		sssObjects[5]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
 	sssObjects[5]->RotateY(90.0f);
 	sssObjects[5]->setPosition(glm::vec3(0, -300, 0));
 
 	///knight court pic
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightStage.png", "courtPicKnight", true));
-	if (FULLSCREEN)
 		sssObjects[6]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
-	else
-		sssObjects[6]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
 	sssObjects[6]->RotateY(90.0f);
 	sssObjects[6]->setPosition(glm::vec3(0, -300, 0));
 
 	///ninja court pic
 	sssObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaStage.png", "courtPicNinja", true));
-	if (FULLSCREEN)
 		sssObjects[7]->setScale(glm::vec3(500.0f, 350.0f, 1.0f));
-	else
-		sssObjects[7]->setScale(glm::vec3(330.0f, 220.0f, 1.0f));
 	sssObjects[7]->RotateY(90.0f);
 	sssObjects[7]->setPosition(glm::vec3(0, -300, 0));
 
 	//End Screen Assets
 	///Background image
 	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightRedWin.png", "redKnightEnd", true));
-	if (FULLSCREEN)
 		endObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		endObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[0]->RotateY(90);
 	endObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
 	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/knightBlueWin.png", "blueKnightEnd", true));
-	if (FULLSCREEN)
 		endObjects[1]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		endObjects[1]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[1]->RotateY(90);
 	endObjects[1]->setPosition(glm::vec3(0, -555, -1));
 
 	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaRedWin.png", "redNinjaRed", true));
-	if (FULLSCREEN)
 		endObjects[2]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		endObjects[2]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[2]->RotateY(90);
 	endObjects[2]->setPosition(glm::vec3(0, -555, -1));
 
 	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/ninjaBlueWin.png", "blueNinjaEnd", true));
-	if (FULLSCREEN)
 		endObjects[3]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		endObjects[3]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[3]->RotateY(90);
 	endObjects[3]->setPosition(glm::vec3(0, -555, -1));
 
 	endObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/tie.png", "tieGameEnd", true));
-	if (FULLSCREEN)
 		endObjects[4]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		endObjects[4]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
 	endObjects[4]->RotateY(90);
 	endObjects[4]->setPosition(glm::vec3(0, -555, -1));
 
 	//Tutorial Screen Assets
 	///Background image
 	tutObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/howTo.png", "tutorial", true));
-	if (FULLSCREEN)
-		tutObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
-	else
-		tutObjects[0]->setScale(glm::vec3(WINDOW_WIDTH *0.35f, WINDOW_HEIGHT *0.51f, 1));
+	tutObjects[0]->setScale(glm::vec3(FULLSCREEN_WIDTH *0.35f, FULLSCREEN_HEIGHT *0.51f, 1));
 	tutObjects[0]->RotateY(90);
 	tutObjects[0]->setPosition(glm::vec3(0, -555, -1));
 
-//================================================================//
+	//================================================================//
 	//Init PointLights
+	//================================================================//
+
 	///PointLightObj(*position*, *color*, *name*, *active?* = false by default);
 	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), "p1Score", false));
 	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), "p2Score", false));
 	pointLights.push_back(new PointLightObj(glm::vec3(-18.0f, 10.0f, -19.0f), glm::vec3(0.5f, 0.5f, 0.5f), "lightLeft", false));
 	pointLights.push_back(new PointLightObj(glm::vec3(18.0f, 10.0f, -19.0f), glm::vec3(0.5f, 0.5f, 0.5f), "lightRight", false));
 	pointLights.push_back(new PointLightObj(glm::vec3(0.0f, 10.0f, -19.0f), glm::vec3(0.5f, 0.5f, 0.5f), "lightCenter", false));
-	//pointLights.push_back(new PointLightObj(glm::vec3(12.0f, 10.0f, 5.0f), glm::vec3(1.0f, 1.0f, 1.0f), "lightFrontR", false));
-	//pointLights.push_back(new PointLightObj(glm::vec3(-12.0f, 10.0f, 5.0f), glm::vec3(1.0f, 1.0f, 1.0f), "lightFrontL", false));
 
 
-//================================================================//
+	//================================================================//
 	//Load Hud Obj and Texture
+	//================================================================//
 
 	std::vector<std::string> hud1;
 	hud1.push_back("./Assets/Models/UI_Object");
 	HudObj.LoadFromFile(hud1);
 
-	if (!HudBack0.Load("./Assets/Textures/HudBack0.png"))
-	{
+	if (!HudBack0.Load("./Assets/Textures/HudBack0.png")){
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!Overlay0.Load("./Assets/Textures/Overlay0.png"))
-	{
+	if (!Overlay0.Load("./Assets/Textures/Overlay0.png")){
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!Bar0.Load("./Assets/Textures/Bar0.png"))
-	{
+	if (!Bar0.Load("./Assets/Textures/Bar0.png")){
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!HudBack1.Load("./Assets/Textures/HudBack1.png"))
-	{
+	if (!HudBack1.Load("./Assets/Textures/HudBack1.png")){
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!Overlay1.Load("./Assets/Textures/Overlay1.png"))
-	{
+	if (!Overlay1.Load("./Assets/Textures/Overlay1.png")){
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
-	if (!Bar1.Load("./Assets/Textures/Bar1.png"))
-	{
+	if (!Bar1.Load("./Assets/Textures/Bar1.png")){
 		std::cout << "BKG Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!StepTexture.Load("./Assets/Textures/StepTexture.png"))
-	{
+	//for toon shading
+	if (!StepTexture.Load("./Assets/Textures/StepTexture.png")){
 		std::cout << "Step Texture failed to load.\n";
 		system("pause");
 		exit(0);
 	}
 	StepTexture.SetNearestFilter();
 
+	//===================================================================//
+	//						Init Characters
+	//===================================================================//
+	blueTemp = (new charBlueDragon("./Assets/Textures/blueDtextureRed.png"));
 
-//===================================================================//
-	//Init Characters
+	//====================================================================//
+	//						Load Shaders
+	//====================================================================//
+	GBufferPass = new ShaderProgram();
+	BloomHighPass = new ShaderProgram();
+	SobelPass = new ShaderProgram();
+	BlurHorizontal = new ShaderProgram();
+	BlurVertical = new ShaderProgram();
+	BloomComposite = new ShaderProgram();
+	DeferredLighting = new ShaderProgram();
+	AniShader = new ShaderProgram();
+	PointLight = new ShaderProgram();
+	ParticleProgram = new ShaderProgram();
+	GrayScale = new ShaderProgram();
+	HPShader = new ShaderProgram();
 
-	knightTemp = (new charBlueDragon("./Assets/Models/Knight", "./Assets/Textures/blueDtextureRed.png"));
-	//ninjaTemp = (new charRedDevil("./Assets/Models/Knight", "./Assets/Textures/blueDtextureRed.png"));
 
-
-//====================================================================//
-	//Load Shaders
-
-	if (!HPShader.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/HPShader.frag"))
-	{
+	if (!HPShader->Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/HPShader.frag")){
 		std::cout << "GBP Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!GBufferPass.Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag"))
-	{
+	if (!GBufferPass->Load("./Assets/Shaders/StaticGeometry.vert", "./Assets/Shaders/GBufferPass.frag")){
 		std::cout << "GBP Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!BloomHighPass.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BloomHighPass.frag"))
-	{
+	if (!BloomHighPass->Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BloomHighPass.frag")){
 		std::cout << "BHP Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!BlurHorizontal.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BlurHorizontal.frag"))
-	{
+	if (!BlurHorizontal->Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BlurHorizontal.frag")){
 		std::cout << "BH Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!BlurVertical.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BlurVertical.frag"))
-	{
+	if (!BlurVertical->Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BlurVertical.frag")){
 		std::cout << "BV Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!BloomComposite.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BloomComposite.frag"))
-	{
+	if (!BloomComposite->Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Bloom/BloomComposite.frag")){
 		std::cout << "BC Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!DeferredLighting.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/DeferredLighting.frag"))
-	{
+	if (!DeferredLighting->Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/DeferredLighting.frag")){
 		std::cout << "DL Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!AniShader.Load("./Assets/Shaders/AnimationShader.vert", "./Assets/Shaders/GBufferPass.frag"))
-	{
+	if (!AniShader->Load("./Assets/Shaders/AnimationShader.vert", "./Assets/Shaders/GBufferPass.frag")){
 		std::cout << "AS Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!PointLight.Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/PointLight.frag"))
-	{
+	if (!PointLight->Load("./Assets/Shaders/PassThroughLight.vert", "./Assets/Shaders/PointLight.frag")){
 		std::cout << "SL Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!AdShader.Load("./Assets/Shaders/AdShader.vert", "./Assets/Shaders/GBufferPass.frag"))
-	{
+	if (!GrayScale->Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/GreyScalePost.frag")){
 		std::cout << "ADS Shaders failed to initialize. \n";
 		system("pause");
 		exit(0);
 	}
 
-	if (!GrayScale.Load("./Assets/Shaders/Passthrough.vert", "./Assets/Shaders/GreyScalePost.frag"))
-	{
-		std::cout << "ADS Shaders failed to initialize. \n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!NetShader.Load("./Assets/Shaders/NetShader.vert", "./Assets/Shaders/GBufferPass.frag"))
-	{
-		std::cout << "NS Shaders failed to initialize. \n";
-		system("pause");
-		exit(0);
-	}
-
-	if (!SobelPass.Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Toon/Sobel.frag"))
-	{
+	if (!SobelPass->Load("./Assets/Shaders/PassThrough.vert", "./Assets/Shaders/Toon/Sobel.frag")){
 		std::cout << "SP Shaders failed to initialize.\n";
 		system("pause");
 		exit(0);
@@ -539,7 +428,7 @@ void Game::initializeGame()
 //================================================================//
 	//Particle Program
 
-	if (!ParticleProgram.Load(
+	if (!ParticleProgram->Load(
 		"./Assets/Shaders/Particles/BillBoard.vert",
 		"./Assets/Shaders/Particles/BillBoard.frag",
 		"./Assets/Shaders/Particles/BillBoard.geom"))
@@ -548,36 +437,6 @@ void Game::initializeGame()
 		system("pause");
 		exit(0);
 	}
-	
-	NinjaPetals.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals.png");
-	NinjaPetals2.PartiParse("./Assets/Data/petals.txt", "./Assets/Textures/petals2.png");
-
-	knightLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/fire2.png");
-	knightRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/fire2.png");
-	knightLeftNet1.PartiParse("./Assets/Data/leftNet1.txt", "./Assets/Textures/fire1.png");
-	knightRightNet1.PartiParse("./Assets/Data/rightNet1.txt", "./Assets/Textures/fire1.png");
-
-	basicLeftNet.PartiParse("./Assets/Data/leftNet1.txt", "./Assets/Textures/puff2.png");
-	basicRightNet.PartiParse("./Assets/Data/rightNet1.txt", "./Assets/Textures/puff2.png");
-	basicLeftNet1.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/puff1.png");
-	basicRightNet1.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/puff1.png");
-
-	ninjaLeftNet.PartiParse("./Assets/Data/leftNet.txt", "./Assets/Textures/flower2.png");
-	ninjaRightNet.PartiParse("./Assets/Data/rightNet.txt", "./Assets/Textures/flower2.png");
-	ninjaLeftNet1.PartiParse("./Assets/Data/leftNet1.txt", "./Assets/Textures/flower1.png");
-	ninjaRightNet1.PartiParse("./Assets/Data/rightNet1.txt", "./Assets/Textures/flower1.png");
-
-	ConfettiEffectRedRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/red.png");
-	ConfettiEffectOrangeRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/orange.png");
-
-	ConfettiEffectRedLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/red.png");
-	ConfettiEffectOrangeLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/orange.png");
-
-	ConfettiEffectBlueLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/blue.png");
-	ConfettiEffectPurpleLeft.PartiParse("./Assets/Data/left.txt", "./Assets/Textures/purple.png");
-
-	ConfettiEffectBlueRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/blue.png");
-	ConfettiEffectPurpleRight.PartiParse("./Assets/Data/redRight.txt", "./Assets/Textures/purple.png");
 
 	if (!DustLand.Init("./Assets/Textures/fog.png", (unsigned int)50, (unsigned int)2))
 	{
@@ -723,66 +582,8 @@ void Game::initializeGame()
 	MeterFlame2.noiseOn = false;
 	MeterFlame2.noiseStrength = 10;
 
-	if (!KnightUltFX.Init("./Assets/Textures/RedConfetti.png", (unsigned int)500, (unsigned int)60))
-	{
-		std::cout << "Spark Particle-Effect failed ot initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	KnightUltFX.LerpAlpha = glm::vec2(0.5f, 0.0f);
-	KnightUltFX.LerpSize = glm::vec2(0.2f, 0.3f);
-	KnightUltFX.RangeLifetime = glm::vec2(0.9f, 1.2f);
-	KnightUltFX.RangeVelocity = glm::vec2(10.0f, 20.0f);
-	KnightUltFX.RangeZ = glm::vec2(-1.0f, -1.0f);
-	KnightUltFX.InitialXRange = glm::vec2(-1.0f, 1.0f);
-	KnightUltFX.InitialYRange = glm::vec2(-0.4f, 0.9f);
-	KnightUltFX.HaveGravity = true;
-	KnightUltFX.Mass = 1.0f;
-	KnightUltFX.Gravity = 0.6f;
-	KnightUltFX.noiseOn = false;
-	KnightUltFX.noiseStrength = 1;
-
-	if (!NinjaUltFX1.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
-	{
-		std::cout << "Spark Particle-Effect failed ot initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	NinjaUltFX1.LerpAlpha = glm::vec2(0.7f, 0.0f);
-	NinjaUltFX1.LerpSize = glm::vec2(1.5f, 2.0f);
-	NinjaUltFX1.RangeLifetime = glm::vec2(0.5f, 0.8f);
-	NinjaUltFX1.RangeVelocity = glm::vec2(2.0f, 10.0f);
-	NinjaUltFX1.RangeZ = glm::vec2(-1.0f, -1.0f);
-	NinjaUltFX1.InitialXRange = glm::vec2(-1.0f, 1.0f);
-	NinjaUltFX1.InitialYRange = glm::vec2(-0.4f, 0.9f);
-	NinjaUltFX1.HaveGravity = true;
-	NinjaUltFX1.Mass = 1.0f;
-	NinjaUltFX1.Gravity = 0.05f;
-	NinjaUltFX1.noiseOn = false;
-	NinjaUltFX1.noiseStrength = 1;
-
-	if (!NinjaUltFX2.Init("./Assets/Textures/fog.png", (unsigned int)500, (unsigned int)30))
-	{
-		std::cout << "Spark Particle-Effect failed ot initialize.\n";
-		system("pause");
-		exit(0);
-	}
-	NinjaUltFX2.LerpAlpha = glm::vec2(0.7f, 0.0f);
-	NinjaUltFX2.LerpSize = glm::vec2(1.5f, 2.0f);
-	NinjaUltFX2.RangeLifetime = glm::vec2(0.5f, 0.8f);
-	NinjaUltFX2.RangeVelocity = glm::vec2(2.0f, 10.0f);
-	NinjaUltFX2.RangeZ = glm::vec2(-1.0f, -1.0f);
-	NinjaUltFX2.InitialXRange = glm::vec2(-1.0f, 1.0f);
-	NinjaUltFX2.InitialYRange = glm::vec2(-0.4f, 0.9f);
-	NinjaUltFX2.HaveGravity = true;
-	NinjaUltFX2.Mass = 1.0f;
-	NinjaUltFX2.Gravity = 0.05f;
-	NinjaUltFX2.noiseOn = false;
-	NinjaUltFX2.noiseStrength = 1;
-
 //=======================================================================//
 	//Init Scene & Frame Buffers
-	if (FULLSCREEN) {
 		GBuffer.InitDepthTexture(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 		//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 		//These parameters can be changed to whatever you want
@@ -790,103 +591,78 @@ void Game::initializeGame()
 		GBuffer.InitColorTexture(1, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
 		//Buffer explained at Week 10 time: 5:30 - 7:45
 		GBuffer.InitColorTexture(2, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
-	}
-	else {
-		GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
-		//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
-		//These parameters can be changed to whatever you want
-		GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
-		GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
-		//Buffer explained at Week 10 time: 5:30 - 7:45
-		GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
-	}
-	if (!GBuffer.CheckFBO())
-	{
+	
+	if (!GBuffer.CheckFBO()){
 		std::cout << "GB FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (FULLSCREEN)
+	
 		DeferredComposite.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	else
-	DeferredComposite.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!DeferredComposite.CheckFBO())
-	{
+	if (!DeferredComposite.CheckFBO()){
 		std::cout << "DC FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
 	ShadowMap.InitDepthTexture(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
-	if (!ShadowMap.CheckFBO())
-	{
+	if (!ShadowMap.CheckFBO()){
 		std::cout << "SM FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
 	//THis is a single channel texture explained at Week 11 time: ~3:30
-	if (FULLSCREEN)
+	
 		EdgeMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	else
-		EdgeMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_R8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!EdgeMap.CheckFBO())
-	{
+	if (!EdgeMap.CheckFBO()){
 		std::cout << "EM FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (FULLSCREEN)
+	
 		WorkBuffer1.InitColorTexture(0,FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8/*GL_R11F_G11F_B10F*/, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	else
-	WorkBuffer1.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, GL_RGB8/*GL_R11F_G11F_B10F*/, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!WorkBuffer1.CheckFBO())
-	{
+		if (!WorkBuffer1.CheckFBO()){
 		std::cout << "WB1 FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-	if (FULLSCREEN)
+	
 		WorkBuffer2.InitColorTexture(0, FULLSCREEN_WIDTH / (unsigned int)BLOOM_DOWNSCALE, FULLSCREEN_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, /*GL_R11F_G11F_B10F*/GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	else
-	WorkBuffer2.InitColorTexture(0, WINDOW_WIDTH / (unsigned int)BLOOM_DOWNSCALE, WINDOW_HEIGHT / (unsigned int)BLOOM_DOWNSCALE, /*GL_R11F_G11F_B10F*/GL_RGB8, GL_LINEAR, GL_CLAMP_TO_EDGE); //These parameters can be changed to whatever you want
-	if (!WorkBuffer2.CheckFBO())
-	{
+		if (!WorkBuffer2.CheckFBO()){
 		std::cout << "WB2 FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 	//0 is equal to 1 for the index. To make another color texture it is as easy as changing the list size in the contructor and copying the line below
 	//These parameters can be changed to whatever you want
-	if (FULLSCREEN)
 		HudMap.InitColorTexture(0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	else
-	HudMap.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE);
-	if (!HudMap.CheckFBO())
-	{
+	if (!HudMap.CheckFBO()){
 		std::cout << "HudMap FBO failed to initialize.\n";
 		system("pause");
 		exit(0);
 	}
 
-//================================================================//
+	//================================================================//
 	//Camera Init
+	//================================================================//
 
 	GameCamera.CameraProjection = Transform::PerspectiveProjection(60.0f, (float)FULLSCREEN_WIDTH / (float)FULLSCREEN_HEIGHT, 1.0f, 10000.0f);
 	ShadowProjection = Transform::OrthographicProjection(-350.0f, 350.0f, 350.0f, -350.0f, -25.0f, 1000.0f);
 	hudProjection = Transform::OrthographicProjection((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, -10.0f, 100.0f);
 	
-
-	loadTime();
-
 	//start timer
 	updateTimer = new Timer();
 
-//=================================================================//
+	//load textures for in game timer
+	loadTime();
+
+	//=================================================================//
 	//Sound Stuff
+	//=================================================================//
 
 	gameTheme.Load("./Assets/Media/GameMusic.wav", false, true);
 	knightJump.Load("./Assets/Media/KnightJump.wav", true, false);
@@ -908,7 +684,6 @@ void Game::initializeGame()
 	themeChannel = gameTheme.Play(defaultPos, defaultPos, true);
 	themeChannel->setVolume(0.7f);
 	mumbleChannel = mumble.Play(defaultPos, defaultPos, true);
-	//gameSound.Load("./Assets/Media/GameMusic.wav");
 
 	//Set Priorities, 0 being the highest priority and 256 being the lowest priority
 	themeChannel->setPriority(256);
@@ -920,10 +695,7 @@ void Game::initializeGame()
 
 	//Create a pitch shift effect
 	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_PITCHSHIFT, &pitchShift);
-	//pitchShift->setParameterFloat(FMOD_DSP_PITCHSHIFT_PITCH, 0.5f);
-
 	Sound::engine.system->createDSPByType(FMOD_DSP_TYPE_HIGHPASS, &highPass);
-
 
 	//init Controller System
 	Controllers = new InputHandler();
@@ -1127,16 +899,6 @@ void Game::updateEndScreen()
 	Controllers->SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
 	Controllers->SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
 
-	//Reset confetti efects so they are not on screen when game starts up again
-	ConfettiEffectBlueLeft.Reset();
-	ConfettiEffectBlueRight.Reset();
-	ConfettiEffectOrangeLeft.Reset();
-	ConfettiEffectOrangeRight.Reset();
-	ConfettiEffectPurpleLeft.Reset();
-	ConfettiEffectPurpleRight.Reset();
-	ConfettiEffectRedLeft.Reset();
-	ConfettiEffectRedRight.Reset();
-
 	//press
 	if (Controllers->getButtonDown(0, MyInputs::Start) || Controllers->getButtonDown(1, MyInputs::Start)) {
 		//Play Select Sound
@@ -1202,40 +964,24 @@ void Game::updateMenu()
 	if (selectedButton != oldButton) {
 		lastInputTime = TotalGameTime;
 		if (selectedButton == 1) {
-			if (FULLSCREEN) {
 				findObjects(0, "button1")->setScale(1.1f * 300.0f);
 				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
 				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
-			}
-			else {
-				findObjects(0, "button1")->setScale(1.1f * 200.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
-			}
+			
 		}
 		else if (selectedButton == 2) {
-			if (FULLSCREEN) {
+			
 				findObjects(0, "button2")->setScale(1.1f * 300.0f);
 				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
 				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 300.0f);
-			}
-			else {
-				findObjects(0, "button2")->setScale(1.1f * 200.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
-				findObjects(0, "button3")->setScale((1.0f / 1.1f) * 200.0f);
-			}
+			
 		}
 		else if (selectedButton == 3) {
-			if (FULLSCREEN) {
+			
 				findObjects(0, "button3")->setScale(1.1f * 300.0f);
 				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 300.0f);
 				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 300.0f);
-			}
-			else {
-				findObjects(0, "button3")->setScale(1.1f * 200.0f);
-				findObjects(0, "button1")->setScale((1.0f / 1.1f) * 200.0f);
-				findObjects(0, "button2")->setScale((1.0f / 1.1f) * 200.0f);
-			}
+			
 		}
 	}
 
@@ -1406,23 +1152,6 @@ void Game::updateCSS()
 	//Both Done
 	if (p1Done && p2Done) {
 
-		/*if (p1Char == 1) {
-			players[0] = new Knight(knightTemp);
-			players[0]->texture.Load("./Assets/Textures/player1.png");
-		}
-		else if (p1Char == 2) {
-			players[0] = new Ninja(ninjaTemp);
-			players[0]->texture.Load("./Assets/Textures/player1ninja.png");
-		}
-
-		if (p2Char == 1) {
-			players[1] = new Knight(knightTemp);
-			players[1]->texture.Load("./Assets/Textures/player2.png");
-		}
-		else if (p2Char == 2) {
-			players[1] = new Ninja(ninjaTemp);
-			players[1]->texture.Load("./Assets/Textures/player2ninja.png");
-		}*/
 
 		scene = 2;
 		lastInputTime = 0.0f;
@@ -1576,7 +1305,7 @@ void Game::updateSSS()
 
 		//Player 1 knight
 		if (p1Char == 1) {
-			players[0] = new charBlueDragon(knightTemp);
+			players[0] = new charBlueDragon(blueTemp);
 			players[0]->bodyTexture.Load("./Assets/Textures/player1.png");
 
 		}
@@ -1591,7 +1320,7 @@ void Game::updateSSS()
 
 		//Player 2 knight
 		if (p2Char == 1) {
-			players[1] = new charBlueDragon(knightTemp);
+			players[1] = new charBlueDragon(blueTemp);
 			players[1]->bodyTexture.Load("./Assets/Textures/player2.png");
 
 		}
@@ -1605,9 +1334,6 @@ void Game::updateSSS()
 		}
 
 		scene = 3;
-		gameDone = false;
-		score1 = 0;
-		score2 = 0;
 		players[0]->respawn();
 		players[1]->respawn();
 		players[0]->setPosition(glm::vec3(-5, 0, 0));
@@ -1635,16 +1361,16 @@ void Game::updateScene()
 		if (players[1]->action == players[1]->ACTION_IDLE || players[1]->action == players[1]->ACTION_FALL)
 			players[1]->facingRight = true;
 	}
-	else{
+	else {
 		if (players[0]->action == players[0]->ACTION_IDLE || players[0]->action == players[0]->ACTION_FALL)
 			players[0]->facingRight = true;
 		if (players[1]->action == players[1]->ACTION_IDLE || players[1]->action == players[1]->ACTION_FALL)
 			players[1]->facingRight = false;
 	}
-	
+
 	//dynamic screen walls
-	leftWall = max(	GameCamera.getPosition().x - 10, -25.0f	);
-	rightWall = min( GameCamera.getPosition().x + 10, 25.0f	);
+	leftWall = max(GameCamera.getPosition().x - 10, -25.0f);
+	rightWall = min(GameCamera.getPosition().x + 10, 25.0f);
 	players[0]->leftWall = leftWall;
 	players[0]->rightWall = rightWall;
 	players[1]->leftWall = leftWall;
@@ -1741,7 +1467,7 @@ void Game::updateScene()
 					//if holding back, and in a action wheret they can block
 
 					//block
-					
+
 				}
 				else {//hit
 
@@ -1788,25 +1514,10 @@ void Game::updateScene()
 		thirtyPlaying = false;
 	}
 
-	//make camera rumble when ult is activated
-	if (players[0]->ultFrame1 || players[1]->ultFrame1) {
-		players[0]->ultFrame1 = false;
-		players[1]->ultFrame1 = false;
-		ultRumbleTimer = 0;
-		GameCamera.setRumble(6, 0.1f);
-	}
-	else if (ultRumbleTimer < 5) {
-		//GameCamera.rumble = true;
-		ultRumbleTimer++;
-	}
-	else if (ultRumbleTimer == 5) {
-		//GameCamera.rumble = false;
-		ultRumbleTimer = 6;
-	}
-	
+
 	players[0]->update((int)deltaTime, Controllers, 0);
 	players[1]->update((int)deltaTime, Controllers, 1);
-	
+
 	for (int i = 0; i < 2; i++) {
 		//check 2 per loop
 		///only checking 1 per frame caused issues with spawn timing (if statement)
@@ -1851,21 +1562,6 @@ void Game::updateScene()
 				MeterFlame1.RangeX = glm::vec2(players[0]->getPosition().x + 0.7f, players[0]->getPosition().x - 1.7f);
 				MeterFlame1.RangeY = glm::vec2(players[0]->getPosition().y - 0.7f, players[0]->getPosition().y + 4.0f);
 				MeterFlame1.Spawn(0.001f);
-				break;
-			case ULTFX:
-				if (players[0]->type == 1) {
-					KnightUltFX.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
-					KnightUltFX.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
-					KnightUltFX.Spawn(0.05f);
-				}
-				if (players[0]->type == 2) {
-					NinjaUltFX1.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
-					NinjaUltFX1.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
-					NinjaUltFX1.Spawn(0.05f);
-					NinjaUltFX2.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
-					NinjaUltFX2.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
-					NinjaUltFX2.Spawn(0.05f);
-				}
 				break;
 			default:
 				break;
@@ -1912,21 +1608,6 @@ void Game::updateScene()
 				MeterFlame2.RangeY = glm::vec2(players[1]->getPosition().y - 0.7f, players[1]->getPosition().y + 4.0f);
 				MeterFlame2.Spawn(0.001f);
 				break;
-			case ULTFX:
-				if (players[1]->type == 1) {
-					KnightUltFX.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
-					KnightUltFX.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
-					KnightUltFX.Spawn(0.05f);
-				}
-				if (players[1]->type == 2) {
-					NinjaUltFX2.RangeX = glm::vec2(players[1]->getPosition().x, players[1]->getPosition().x);
-					NinjaUltFX2.RangeY = glm::vec2(players[1]->getPosition().y + 1.5f, players[1]->getPosition().y + 1.5f);
-					NinjaUltFX2.Spawn(0.05f);
-					NinjaUltFX1.RangeX = glm::vec2(players[0]->getPosition().x, players[0]->getPosition().x);
-					NinjaUltFX1.RangeY = glm::vec2(players[0]->getPosition().y + 1.5f, players[0]->getPosition().y + 1.5f);
-					NinjaUltFX1.Spawn(0.05f);
-				}
-				break;
 			default:
 				break;
 			}
@@ -1936,27 +1617,13 @@ void Game::updateScene()
 		}
 	}
 
-	/*if (p1Score || p2Score)
-	{
-		static float timePassed;
-		timePassed += updateTimer->getElapsedTimeSeconds();
-
-		if (timePassed >= 5.0f)
-		{
-			p1Score = false;
-			p2Score = false;
-			timePassed = 0.0f;
-		}
-	}*/
-
-
 	//DYNAMIC CAM
 
 
 	//camera control using seek point and target zoom
 	seekPoint.x = (players[1]->getPosition().x + players[0]->getPosition().x) * 0.5f;//seek point is inbetween the 2 players
 	seekPoint.y = ((players[1]->getPosition().y + players[0]->getPosition().y) * 0.5f) - 2;//seek point is inbetween the 2 players
-	
+
 	//camera bounds
 	if (abs(seekPoint.x) > 25) {
 		seekPoint.x /= abs(seekPoint.x);
@@ -1972,7 +1639,7 @@ void Game::updateScene()
 
 	GameCamera.targetZoom = 5;
 	GameCamera.seekPoint = seekPoint + glm::vec3(0, 5, 0);
-	
+
 	GameCamera.update();
 	//GameCamera.CameraTransform = Transform::Identity();
 	//GameCamera.CameraTransform.Translate(glm::vec3((players[1]->getPosition().x + players[0]->getPosition().x) / 2.0f, abs(sqrtf(dist*0.01f)*18.5f) + 10.0f + ((players[1]->getPosition().y + players[0]->getPosition().y) / 2.0f), (dist* 0.75f) + 9));
@@ -1985,11 +1652,11 @@ void Game::updateScene()
 	ShadowTransform.RotateY(180.0f);//make light look down
 	ShadowTransform.Translate(glm::vec3(10.0f, 20.0f, -20.0f));
 	//ShadowTransform.RotateY(180.0f);
-	
+
 	Transform bias = Transform(0.5f, 0.0f, 0.0f, 0.5f,
-					 0.0f, 0.5f, 0.0f, 0.5f,
-					 0.0f, 0.0f, 0.5f, 0.5f,
-					 0.0f, 0.0f, 0.0f, 1.0f);
+		0.0f, 0.5f, 0.0f, 0.5f,
+		0.0f, 0.0f, 0.5f, 0.5f,
+		0.0f, 0.0f, 0.0f, 1.0f);
 
 	ViewToShadowMap = Transform::Identity();
 	ViewToShadowMap = bias * ShadowProjection * ShadowTransform.GetInverse() * GameCamera.CameraTransform;
@@ -1998,28 +1665,6 @@ void Game::updateScene()
 
 	///PARTICLE EFFECTS
 	//Update Patricle Effects
-	ConfettiEffectBlueRight.Update(deltaTime);
-	ConfettiEffectBlueLeft.Update(deltaTime);
-	ConfettiEffectRedRight.Update(deltaTime);
-	ConfettiEffectRedLeft.Update(deltaTime);
-	ConfettiEffectOrangeRight.Update(deltaTime);
-	ConfettiEffectOrangeLeft.Update(deltaTime);
-	ConfettiEffectPurpleRight.Update(deltaTime);
-	ConfettiEffectPurpleLeft.Update(deltaTime);
-	basicLeftNet.Update(deltaTime);
-	basicRightNet.Update(deltaTime);
-	basicLeftNet1.Update(deltaTime);
-	basicRightNet1.Update(deltaTime);
-	ninjaLeftNet.Update(deltaTime);
-	ninjaRightNet.Update(deltaTime);
-	ninjaLeftNet1.Update(deltaTime);
-	ninjaRightNet1.Update(deltaTime);
-	knightLeftNet.Update(deltaTime);
-	knightRightNet.Update(deltaTime);
-	knightLeftNet1.Update(deltaTime);
-	knightRightNet1.Update(deltaTime);
-	NinjaPetals.Update(deltaTime);
-	NinjaPetals2.Update(deltaTime);
 	DustDashL.Update(deltaTime);
 	DustDashR.Update(deltaTime);
 	DustLand.Update(deltaTime);
@@ -2028,9 +1673,6 @@ void Game::updateScene()
 	HitSparkR.Update(deltaTime);
 	MeterFlame1.Update(deltaTime);
 	MeterFlame2.Update(deltaTime);
-	KnightUltFX.Update(deltaTime);
-	NinjaUltFX1.Update(deltaTime);
-	NinjaUltFX2.Update(deltaTime);
 
 	//Sound Effects//
 	p1Pos = { players[0]->getPosition().x, players[0]->getPosition().y, players[0]->getPosition().z };
@@ -2051,7 +1693,7 @@ void Game::updateScene()
 	if (players[0]->action == 6)
 	{
 		if (!p1Jump2)
-		//if (knightChannel->isPlaying(p1Jump) == false)
+			//if (knightChannel->isPlaying(p1Jump) == false)
 		{
 			if (!isNinja1)
 				knightChannel = knightJump.Play(defaultPos, defaultPos, false);
@@ -2077,17 +1719,6 @@ void Game::updateScene()
 		p1Jump2 = false;
 	}
 
-	if (p1Score == true || p2Score == true)
-	{
-		//otherChannel->setVolume(1.0f);
-		//std::cout << "PLAY CHEER";
-		if (!soundPlaying)
-		{
-			otherChannel = cheer.Play(defaultPos, defaultPos, false);
-			soundPlaying = true;
-		}
-	}
-
 	//Announcer voice effects for times
 	if (TotalGameTime >= 240.0f)
 	{
@@ -2106,54 +1737,8 @@ void Game::updateScene()
 		}
 	}
 
-	//additional lights
-	if (p1Score == true)
-	{
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		bool temp = false;
-
-		float check = (timer - (int)timer);
-		temp = (bool)(check >= 0.5f && check < 1.0f);
-
-		if (timer >= 4.0f)
-			temp = false;
-
-		findLight("p1Score")->active = temp;
-
-		if (timer >= 4.5f)
-		{
-			p1Score = false;
-			p2Score = false;
-			soundPlaying = false;
-			timer = 0.0f;
-		}
-	}
-	if (p2Score == true)
-	{
-		static float timer;
-		timer += updateTimer->getElapsedTimeSeconds();
-		bool temp = false;
-
-		float check = (timer - (int)timer);
-		temp = (bool)(check >= 0.5f && check < 1.0f);
-
-		if (timer >= 4.0f)
-			temp = false;
-
-		findLight("p2Score")->active = temp;
-
-		if (timer >= 4.5f)
-		{
-			p1Score = false;
-			p2Score = false;
-			soundPlaying = false;
-			timer = 0.0f;
-		}
-	}
-
 	//End Game
-	if (score1 == 10 || score2 == 10 || TotalGameTime >= 300)
+	if (players[0]->dead == true || players[1]->dead == true || TotalGameTime >= 99)
 	{
 		//Make game black and white
 		grayscale = true;
@@ -2161,7 +1746,7 @@ void Game::updateScene()
 		//Delay timer before going to results screen
 		static float tempTime;
 		tempTime += updateTimer->getElapsedTimeSeconds();
-		
+
 		if (!hornPlaying)
 		{
 			otherChannel->setPriority(0);
@@ -2174,27 +1759,22 @@ void Game::updateScene()
 		themeChannel->setVolume(decreaseVal);
 
 		//Check if player 1 won
-		if (score1 > score2)
-		{
+		if (players[1]->dead == true) {
 			//Check what character they are
 			if (p1Char == 1)
 				p1KnightWin = true;
 			else if (p1Char == 2)
 				p1NinjaWin = true;
 		}
-
 		//Check if player 2 won
-		if (score2 > score1)
-		{
+		else if (players[0]->dead == true) {
 			//Check what character they are
 			if (p2Char == 1)
 				p2KnightWin = true;
 			else if (p2Char == 2)
 				p2NinjaWin = true;
 		}
-
-		if (score1 == score2)
-		{
+		else {
 			tieGame = true;
 		}
 
@@ -2217,92 +1797,39 @@ void Game::updateScene()
 			hornPlaying = false;
 			onePlaying = false;
 			thirtyPlaying = false;
+
+			//to be removed later
+			p1Char = 1;
+			p2Char = 2;
+			players[0] = new charBlueDragon(blueTemp);
+			players[1] = new charBlueDragon(blueTemp);
+			players[1]->bodyTexture.Load("./Assets/Textures/blueDtextureBlue.png");
+
+			stageVal = 1;
+			//hide ninja court
+			findObjects(3, "stage3_env")->hide = true;
+			for (int i = 0; i < (int)stage3_env_objs.size(); i++)
+				findObjects(3, stage3_env_objs[i])->hide = true;
+			//hide knight court
+			findObjects(3, "stage2_env")->hide = true;
+			for (int i = 0; i < (int)stage2_env_objs.size(); i++)
+				findObjects(3, stage2_env_objs[i])->hide = true;
+			//show default court
+			findObjects(3, "stage1_env")->hide = false;
+			for (int i = 0; i < (int)stage1_env_objs.size(); i++)
+				findObjects(3, stage1_env_objs[i])->hide = false;
+			scene = 3;
+			players[0]->respawn();
+			players[0]->facingRight = true;
+			players[1]->respawn();
+			players[1]->facingRight = false;
+			TotalGameTime = 0.0f;
+			lastInputTime = 0.0f;
+			players[0]->setPosition(glm::vec3(-5, 0, 0));
+			players[1]->setPosition(glm::vec3(5, 0, 0));
 		}
 	}
-
-	/////Court specific functionality
-	////Basic Court
-	//if (stageVal == 1)
-	//{
-	//	//Move the crowds up and down
-	//	float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .5f);
-	//	findObjects(3, "default_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
-
-	//	float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .75f);
-	//	findObjects(3, "default_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
-
-	//	float movementVal3 = (cos((TotalGameTime * 7) + 25) + .25f);
-	//	findObjects(3, "default_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
-
-	//	basicLeftNet.Spawn(1.0f);
-	//	basicRightNet.Spawn(1.0f);
-	//	basicLeftNet1.Spawn(1.0f);
-	//	basicRightNet1.Spawn(1.0f);
-
-
-	//	//Additional lights in the basic court
-	//	findLight("lightLeft")->active = true;
-	//	findLight("lightRight")->active = true;
-	//	findLight("lightCenter")->active = true;
-	//}
-	////Knight Court
-	//if (stageVal == 2)
-	//{
-	//	//Move the crowds up and down
-	//	float movementVal1 = (cos((TotalGameTime) * 9 + 110) + .6f);
-	//	findObjects(3, "knight_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
-
-	//	float movementVal2 = (cos((TotalGameTime) * 5 + 55) + .85f);
-	//	findObjects(3, "knight_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
-
-	//	float movementVal3 = (cos((TotalGameTime * 7) + 25) + .73f);
-	//	findObjects(3, "knight_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
-
-	//	knightLeftNet.Spawn(1.0f);
-	//	knightRightNet.Spawn(1.0f);
-	//	knightLeftNet1.Spawn(1.0f);
-	//	knightRightNet1.Spawn(1.0f);
-
-
-	//	//Turn off the lights from the basic court
-	//	findLight("lightLeft")->active = false;
-	//	findLight("lightRight")->active = false;
-	//	findLight("lightCenter")->active = false;
-	//}
-	////Ninja Court
-	//if (stageVal == 3)
-	//{
-	//	//Move the crowds up and down
-	//	float movementVal1 = (cos((TotalGameTime) * 9 + 110) + 1.0f);
-	//	findObjects(3, "ninja_crowd1")->transform.SetTranslation(glm::vec3(0.0f, movementVal1, 0.0f));
-
-	//	float movementVal2 = (cos((TotalGameTime) * 5 + 55) + 1.25f);
-	//	findObjects(3, "ninja_crowd2")->transform.SetTranslation(glm::vec3(0.0f, movementVal2, 0.0f));
-
-	//	float movementVal3 = (cos((TotalGameTime * 7) + 25) + 1.13f);
-	//	findObjects(3, "ninja_crowd3")->transform.SetTranslation(glm::vec3(0.0f, movementVal3, 0.0f));
-
-	//	//Flower petal effect
-	//	NinjaPetals.Spawn(1.0f);
-	//	NinjaPetals2.Spawn(1.0f);
-	//	ninjaLeftNet.Spawn(1.0f);
-	//	ninjaRightNet.Spawn(1.0f);
-	//	ninjaLeftNet1.Spawn(1.0f);
-	//	ninjaRightNet1.Spawn(1.0f);
-
-
-	//	//Turn off the lights from the basic court
-	//	findLight("lightLeft")->active = false;
-	//	findLight("lightRight")->active = false;
-	//	findLight("lightCenter")->active = false;
-	//}
 }
-/*
-***Always remember to ask the three questions***
-What are we rendering
-Where are we rendering it to
-How are we rendering it
-*/
 
 void Game::draw()
 {
@@ -2343,25 +1870,20 @@ void Game::drawTutScreen()
 	WorkBuffer2.Clear();
 
 	/// Create Scene From GBuffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
-	DeferredLighting.Bind();
-	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
-	DeferredLighting.SendUniform("uScene", 0);
-	DeferredLighting.SendUniform("uShadowMap", 1);
-	DeferredLighting.SendUniform("uNormalMap", 2);
-	DeferredLighting.SendUniform("uPositionMap", 3);
-	//DeferredLighting.SendUniform("uEdgeMap", 4);
-	//DeferredLighting.SendUniform("uStepTexture", 4);
+	DeferredLighting->Bind();
+	DeferredLighting->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting->SendUniform("uScene", 0);
+	DeferredLighting->SendUniform("uShadowMap", 1);
+	DeferredLighting->SendUniform("uNormalMap", 2);
+	DeferredLighting->SendUniform("uPositionMap", 3);
 
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting->SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting->SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting->SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
 
@@ -2372,8 +1894,6 @@ void Game::drawTutScreen()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(2));
-
-
 
 	DrawFullScreenQuad();
 
@@ -2386,10 +1906,9 @@ void Game::drawTutScreen()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
-	DeferredLighting.UnBind();
+	DeferredLighting->UnBind();
 
 	//===============================================================
-		//DeferredComposite.Bind();
 	DeferredComposite.Bind();
 
 	glEnable(GL_BLEND);
@@ -2403,10 +1922,7 @@ void Game::drawTutScreen()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
-	if (FULLSCREEN)
-		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -2414,18 +1930,18 @@ void Game::drawTutScreen()
 //////////////////////////
 	//now ready to draw 2d
 //////////////////////////
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draws everything in menu
 	sortObjects(5);
 	for (int i = 0; i < (int)tutObjects.size(); i++) {
-		tutObjects[i]->draw(GBufferPass, 1);
+		tutObjects[i]->draw(*GBufferPass, 1);
 	}
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -2442,65 +1958,50 @@ void Game::drawTutScreen()
 	//===============================================================
 
 		/// Compute High Pass ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	//Moving data to the back buffer, at the same time as our last post process
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("uTex", 0);
+	BloomHighPass->SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
-	BloomHighPass.UnBind();
+	BloomHighPass->UnBind();
 
 	/// Compute Blur ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
-		BlurHorizontal.Bind();
-		BlurHorizontal.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
-		else
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		BlurHorizontal->Bind();
+		BlurHorizontal->SendUniform("uTex", 0);
+		BlurHorizontal->SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 		WorkBuffer2.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
-		BlurHorizontal.UnBind();
+		BlurHorizontal->UnBind();
 
 		//Vertical Blur
-		BlurVertical.Bind();
-		BlurVertical.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
-		else
-			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		BlurVertical->Bind();
+		BlurVertical->SendUniform("uTex", 0);
+		BlurVertical->SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 		WorkBuffer1.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
-		BlurVertical.UnBind();
+		BlurVertical->UnBind();
 	}
 
 	/// Composite To Back Buffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	BloomComposite.Bind();
-	BloomComposite.SendUniform("uScene", 0);
-	BloomComposite.SendUniform("uBloom", 1);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	BloomComposite->Bind();
+	BloomComposite->SendUniform("uScene", 0);
+	BloomComposite->SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
@@ -2509,7 +2010,7 @@ void Game::drawTutScreen()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	BloomComposite.UnBind();
+	BloomComposite->UnBind();
 
 	glutSwapBuffers();
 }
@@ -2530,25 +2031,19 @@ void Game::drawEndScreen()
 	WorkBuffer2.Clear();
 
 	/// Create Scene From GBuffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	DeferredLighting->Bind();
+	DeferredLighting->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting->SendUniform("uScene", 0);
+	DeferredLighting->SendUniform("uShadowMap", 1);
+	DeferredLighting->SendUniform("uNormalMap", 2);
+	DeferredLighting->SendUniform("uPositionMap", 3);
 
-	DeferredLighting.Bind();
-	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
-	DeferredLighting.SendUniform("uScene", 0);
-	DeferredLighting.SendUniform("uShadowMap", 1);
-	DeferredLighting.SendUniform("uNormalMap", 2);
-	DeferredLighting.SendUniform("uPositionMap", 3);
-	//DeferredLighting.SendUniform("uEdgeMap", 4);
-	//DeferredLighting.SendUniform("uStepTexture", 4);
-
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting->SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting->SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting->SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
 
@@ -2573,7 +2068,7 @@ void Game::drawEndScreen()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
-	DeferredLighting.UnBind();
+	DeferredLighting->UnBind();
 
 	//===============================================================
 		//DeferredComposite.Bind();
@@ -2590,10 +2085,7 @@ void Game::drawEndScreen()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
-	if (FULLSCREEN)
-		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -2601,27 +2093,27 @@ void Game::drawEndScreen()
 //////////////////////////
 	//now ready to draw 2d
 //////////////////////////
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draws everything in menu
 	sortObjects(4);
 	for (int i = 0; i < (int)endObjects.size(); i++) {
 		if (p1KnightWin)
-			endObjects[0]->draw(GBufferPass, 1);
-		if (p1NinjaWin)
-			endObjects[2]->draw(GBufferPass, 1);
-		if (p2KnightWin)
-			endObjects[1]->draw(GBufferPass, 1);
-		if (p2NinjaWin)
-			endObjects[3]->draw(GBufferPass, 1);
-		if (tieGame)
-			endObjects[4]->draw(GBufferPass, 1);
+			endObjects[0]->draw(*GBufferPass, 1);
+		else if (p1NinjaWin)
+			endObjects[2]->draw(*GBufferPass, 1);
+		else if (p2KnightWin)
+			endObjects[1]->draw(*GBufferPass, 1);
+		else if (p2NinjaWin)
+			endObjects[3]->draw(*GBufferPass, 1);
+		else if (tieGame)
+			endObjects[4]->draw(*GBufferPass, 1);
 	}
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -2638,65 +2130,50 @@ void Game::drawEndScreen()
 	//===============================================================
 
 		/// Compute High Pass ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	//Moving data to the back buffer, at the same time as our last post process
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("uTex", 0);
+	BloomHighPass->SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
-	BloomHighPass.UnBind();
+	BloomHighPass->UnBind();
 
 	/// Compute Blur ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
-		BlurHorizontal.Bind();
-		BlurHorizontal.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
-		else
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		BlurHorizontal->Bind();
+		BlurHorizontal->SendUniform("uTex", 0);
+		BlurHorizontal->SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 		WorkBuffer2.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
-		BlurHorizontal.UnBind();
+		BlurHorizontal->UnBind();
 
 		//Vertical Blur
-		BlurVertical.Bind();
-		BlurVertical.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
-		else
-			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		BlurVertical->Bind();
+		BlurVertical->SendUniform("uTex", 0);
+		BlurVertical->SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 		WorkBuffer1.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
-		BlurVertical.UnBind();
+		BlurVertical->UnBind();
 	}
 
 	/// Composite To Back Buffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	BloomComposite.Bind();
-	BloomComposite.SendUniform("uScene", 0);
-	BloomComposite.SendUniform("uBloom", 1);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
+	BloomComposite->Bind();
+	BloomComposite->SendUniform("uScene", 0);
+	BloomComposite->SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
@@ -2705,7 +2182,7 @@ void Game::drawEndScreen()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	BloomComposite.UnBind();
+	BloomComposite->UnBind();
 
 	glutSwapBuffers();
 }
@@ -2731,11 +2208,11 @@ void Game::drawScene()
 	/// Generate The Shadow Map ///
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);
 
-	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
+	GBufferPass->Bind();
+	GBufferPass->SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
-	GBufferPass.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", ShadowProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", ShadowProjection.data, true);
 
 	ShadowMap.Bind();
 
@@ -2753,121 +2230,75 @@ void Game::drawScene()
 	//glBindVertexArray(Background.VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, Background.GetNumVertices());
 
-	//GBufferPass.SendUniformMat4("uModel",playerOne->transform.data, true);
+	//GBufferPass->SendUniformMat4("uModel",playerOne->transform.data, true);
 	//playerOne->drawShadow(GBufferPass, 1);
-	//GBufferPass.SendUniformMat4("uModel", playerTwo->transform.data, true);
+	//GBufferPass->SendUniformMat4("uModel", playerTwo->transform.data, true);
 	//playerTwo->drawShadow(GBufferPass, 1);
 
-	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
-	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
+	GBufferPass->SendUniformMat4("uModel", Transform().data, true);
+	GBufferPass->SendUniformMat4("uModel", Transform().data, true);
 
 
 	glDisable(GL_CULL_FACE);//should fix random holes in knight
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 	//draw p1 shadow
-	AniShader.Bind();
-	AniShader.SendUniformMat4("uModel", Transform().data, true);
-	AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
-	AniShader.SendUniformMat4("uModel", players[0]->transform.data, true);
-	players[0]->draw(AniShader, 0);
-	AniShader.SendUniformMat4("uModel", Transform().data, true);
-	
+	AniShader->Bind();
+	AniShader->SendUniformMat4("uModel", Transform().data, true);
+	AniShader->SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+	AniShader->SendUniformMat4("uProj", ShadowProjection.data, true);
+	AniShader->SendUniformMat4("uModel", players[0]->transform.data, true);
+	players[0]->draw(*AniShader, 0);
+	AniShader->SendUniformMat4("uModel", Transform().data, true);
+
 	//draw p2 shadow
-	AniShader.Bind();
-	AniShader.SendUniformMat4("uModel", Transform().data, true);
-	AniShader.SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", ShadowProjection.data, true);
-	AniShader.SendUniformMat4("uModel", players[1]->transform.data, true);
-	players[1]->draw(AniShader, 0);
-	AniShader.SendUniformMat4("uModel", Transform().data, true);
+	AniShader->Bind();
+	AniShader->SendUniformMat4("uModel", Transform().data, true);
+	AniShader->SendUniformMat4("uView", ShadowTransform.GetInverse().data, true);
+	AniShader->SendUniformMat4("uProj", ShadowProjection.data, true);
+	AniShader->SendUniformMat4("uModel", players[1]->transform.data, true);
+	players[1]->draw(*AniShader, 0);
+	AniShader->SendUniformMat4("uModel", Transform().data, true);
 
 	glEnable(GL_CULL_FACE);//turn it back on after for preformance
 
 	glBindVertexArray(0);
 
 	ShadowMap.UnBind();
-	AniShader.UnBind();
+	AniShader->UnBind();
 
 	/// Generate The Scene ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
-	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uModel", Transform().data, true);
+	GBufferPass->Bind();
+	GBufferPass->SendUniformMat4("uModel", Transform().data, true);
 	//The reason of the inverse is because it is easier to do transformations
-	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-	//GBufferPass.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	GBufferPass->SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+	//GBufferPass->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
 
 	//MAKE SURE TO KNOW WHAT VIEWSPACE YOU ARE WORKING IN
-	GBufferPass.SendUniform("uTex", 0);
-	//GBufferPass.SendUniform("uShadowMap", 1);
-	//StaticGeometry.SendUniform("LightPosition", CameraTransform.GetInverse() * vec4(4.0f, 0.0f, 0.0f, 1.0f));
-	//Is .GetUp() the replacement for .GetRotationMat()?***
-	/*GBufferPass.SendUniform("LightDirection", CameraTransform.GetInverse().GetUp() * ShadowTransform.GetForward());//vec4(ShadowTransform.GetForward(), 0.0f));
-	GBufferPass.SendUniform("LightAmbient", vec3(0.333f, 0.333f, 0.333f)); //You can LERP through colours to make night to day cycles
-	GBufferPass.SendUniform("LightDiffuse", vec3(0.8f, 0.8f, 0.8f));
-	GBufferPass.SendUniform("LightSpecular", vec3(0.1f, 0.1f, 0.1f));
-	GBufferPass.SendUniform("LightSpecularExponent", 200.0f);
-	StaticGeometry.SendUniform("Attenuation_Constant", 1.0f);
-	StaticGeometry.SendUniform("Attenuation_Linear", 0.1f);
-	StaticGeometry.SendUniform("Attenuation_Quadratic", 0.01f);*/
-
+	GBufferPass->SendUniform("uTex", 0);
 	GBuffer.Bind();
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, ShadowMap.GetDepthHandle());
 	glActiveTexture(GL_TEXTURE0);
 
-	///playerOne->draw(GBufferPass);
-	///playerTwo->draw(GBufferPass);
-
 	//draws everything in scene
 	sortObjects(3);
 	for (int i = 0; i < (int)gameObjects.size(); i++) {
-		//if (gameObjects[i] == findObjects(3, "default_words"))
-		//{
-		//	AdShader.Bind();
-		//	AdShader.SendUniformMat4("uModel", Transform().data, true);
-		//	AdShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-		//	AdShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-		//	AdShader.SendUniform("uTex", 0);
-		//	AdShader.SendUniform("uTime", TotalGameTime);
-		//	gameObjects[i]->draw(AdShader, 1);
-		//
-		//	AdShader.UnBind();
-		//}
-		//else if (gameObjects[i] == findObjects(3, "smoke_net") || gameObjects[i] == findObjects(3, "fire_net") || gameObjects[i] == findObjects(3, "petals_net"))
-		//{
-		//	glEnable(GL_BLEND);
-		//	NetShader.Bind();
-		//	NetShader.SendUniformMat4("uModel", Transform().data, true);
-		//	NetShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-		//	NetShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-		//	NetShader.SendUniform("uTex", 0);
-		//	NetShader.SendUniform("uTime", TotalGameTime);
-		//	gameObjects[i]->draw(NetShader, 1);
-		//
-		//	NetShader.UnBind();
-		//	glDisable(GL_BLEND);
-		//}
-		//else
-		//{
-			GBufferPass.Bind();
-			GBufferPass.SendUniformMat4("uModel", Transform().data, true);
-			//The reason of the inverse is because it is easier to do transformations
-			GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-			GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-			//GBufferPass.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
 
-			//MAKE SURE TO KNOW WHAT VIEWSPACE YOU ARE WORKING IN
-			GBufferPass.SendUniform("uTex", 0);
-			gameObjects[i]->draw(GBufferPass, 1);
-		//}
+		GBufferPass->Bind();
+		GBufferPass->SendUniformMat4("uModel", Transform().data, true);
+		//The reason of the inverse is because it is easier to do transformations
+		GBufferPass->SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+		GBufferPass->SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+		//GBufferPass->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+
+		//MAKE SURE TO KNOW WHAT VIEWSPACE YOU ARE WORKING IN
+		GBufferPass->SendUniform("uTex", 0);
+		gameObjects[i]->draw(*GBufferPass, 1);
 	}
 
 	glDisable(GL_BLEND);
@@ -2897,103 +2328,52 @@ void Game::drawScene()
 
 	glBindVertexArray(0);
 
-	//GBuffer.UnBind();
-
-	//DRAW NET HITBOX CODE
-	//	for (unsigned int i = 0; i < Netbox.size(); i++) {
-	//		int modelLoc = glGetUniformLocation(GBufferPass.getProgram(), "uModel");
-	//		glUniformMatrix4fv(modelLoc, 1, false, Netbox[i]->getTransform().data);
-	//
-	//		boxTexture.Bind();
-	//		glBindVertexArray(boxMesh.VAO);
-	//
-	//		// Adjust model matrix for next object's location
-	//		glDrawArrays(GL_TRIANGLES, 0, boxMesh.GetNumVertices());
-	//		glUniformMatrix4fv(modelLoc, 1, false, Transform().data);
-	//	}
-	//	boxTexture.UnBind();
-
-
-	players[0]->drawBoxes(GBufferPass);
-	players[1]->drawBoxes(GBufferPass);
-	//playerOne->draw(GBufferPass);
-	//playerTwo->draw(GBufferPass);
-
-	///Ani Shader///
-	/*AniShader.Bind();
-	static float aniTimer = 0.f;
-	static int index = 0;
-	aniTimer += updateTimer->getElapsedTimeSeconds();
-	if (aniTimer > 1.0f)
-	{
-		aniTimer = 0.0f;
-		index = (index + 1) % 2;
-	}
-	// Ask for the handles identfying the uniform variables in our shader.
-	AniShader.SendUniformMat4("uModel", playerOne->transform.data, true);
-	AniShader.SendUniformMat4("uView", CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", CameraProjection.data, true);
-	AniShader.SendUniform("interp", aniTimer);
-	AniShader.SendUniform("index", index);
-
-
-	playerOne->draw(AniShader);
-	playerTwo->draw(AniShader);
-
-	AniShader.UnBind();*/
+	players[0]->drawBoxes(*GBufferPass);
+	players[1]->drawBoxes(*GBufferPass);
 
 
 	glDisable(GL_CULL_FACE);//should fix random holes in knight
 	//glDisable(GL_BLEND);//should fix random holes in knight
 
-	AniShader.Bind();
-	AniShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-	players[0]->draw(AniShader, 1);
+	AniShader->Bind();
+	AniShader->SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	AniShader->SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+	players[0]->draw(*AniShader, 1);
 
-	AniShader.Bind();
-	AniShader.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-	AniShader.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-	players[1]->draw(AniShader, 1);
+	AniShader->Bind();
+	AniShader->SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	AniShader->SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+	players[1]->draw(*AniShader, 1);
 
 	glEnable(GL_CULL_FACE);//turn it back on after for preformance
-	//glEnable(GL_BLEND);//turn it back on after for preformance
 
-	//drawScore();
-	//drawTime();
 	//Black and white
 	if (grayscale == true)
 	{
-		GrayScale.Bind();
-		GrayScale.SendUniform("uTex", 0);
+		GrayScale->Bind();
+		GrayScale->SendUniform("uTex", 0);
 
 		glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
-		GrayScale.UnBind();
+		GrayScale->UnBind();
 	}
-	AniShader.UnBind();
+	AniShader->UnBind();
 	GBuffer.UnBind();
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
-	
+
 
 	/// Detect Edges ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
 	//Rednering it with the shader
-	SobelPass.Bind();
-	SobelPass.SendUniform("uNormalMap", 0);
-	SobelPass.SendUniform("uDepthMap", 1);
+	SobelPass->Bind();
+	SobelPass->SendUniform("uNormalMap", 0);
+	SobelPass->SendUniform("uDepthMap", 1);
 	float stroke = 1.1f;
-	if (FULLSCREEN)
-		SobelPass.SendUniform("uPixelSize", glm::vec2(stroke / FULLSCREEN_WIDTH, stroke / FULLSCREEN_HEIGHT));
-	else
-		SobelPass.SendUniform("uPixelSize", glm::vec2(stroke / WINDOW_WIDTH, stroke / WINDOW_HEIGHT));
+	SobelPass->SendUniform("uPixelSize", glm::vec2(stroke / FULLSCREEN_WIDTH, stroke / FULLSCREEN_HEIGHT));
 
 	//Where we are rendering
 	EdgeMap.Bind();
@@ -3001,35 +2381,31 @@ void Game::drawScene()
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetColorHandle(1));
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, GBuffer.GetDepthHandle());
-		DrawFullScreenQuad();
+	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
 	EdgeMap.UnBind();
-	SobelPass.UnBind();
+	SobelPass->UnBind();
 
 	/// Create Scene From GBuffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
-	DeferredLighting.Bind();
-	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
-	DeferredLighting.SendUniform("uScene", 0);
-	DeferredLighting.SendUniform("uShadowMap", 1);
-	DeferredLighting.SendUniform("uNormalMap", 2);
-	DeferredLighting.SendUniform("uPositionMap", 3);
-	DeferredLighting.SendUniform("uEdgeMap", 4);
-	DeferredLighting.SendUniform("uStepTexture", 5);
-
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
-	DeferredLighting.SendUniform("uToonActive", toonActive);
+	DeferredLighting->Bind();
+	DeferredLighting->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting->SendUniform("uScene", 0);
+	DeferredLighting->SendUniform("uShadowMap", 1);
+	DeferredLighting->SendUniform("uNormalMap", 2);
+	DeferredLighting->SendUniform("uPositionMap", 3);
+	DeferredLighting->SendUniform("uEdgeMap", 4);
+	DeferredLighting->SendUniform("uStepTexture", 5);
+	DeferredLighting->SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting->SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting->SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting->SendUniform("uToonActive", toonActive);
 
 	DeferredComposite.Bind();
 
@@ -3052,21 +2428,21 @@ void Game::drawScene()
 	//glBlendFunc(GL_ONE, GL_ONE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	PointLight.Bind();
-	PointLight.SendUniform("uSceneAlbedo", 0);
-	PointLight.SendUniform("uNormalMap", 2);
-	PointLight.SendUniform("uPositionMap", 3);
-	PointLight.SendUniform("uEdgeMap", 4);
-	PointLight.SendUniform("uStepTexture", 5);
-	PointLight.SendUniform("uToonActive", toonActive);
-	
+	PointLight->Bind();
+	PointLight->SendUniform("uSceneAlbedo", 0);
+	PointLight->SendUniform("uNormalMap", 2);
+	PointLight->SendUniform("uPositionMap", 3);
+	PointLight->SendUniform("uEdgeMap", 4);
+	PointLight->SendUniform("uStepTexture", 5);
+	PointLight->SendUniform("uToonActive", toonActive);
+
 	for (int i = 0; i < (int)pointLights.size(); i++) {
 		if (pointLights[i]->active == true) {
-			pointLights[i]->draw(PointLight, GameCamera.CameraTransform);
+			pointLights[i]->draw(*PointLight, GameCamera.CameraTransform);
 			DrawFullScreenQuad();
 		}
 	}
-	PointLight.UnBind();
+	PointLight->UnBind();
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
@@ -3085,35 +2461,13 @@ void Game::drawScene()
 
 
 	//draw particles
-	ParticleProgram.Bind();
-	ParticleProgram.SendUniform("uTex", 0);
-	ParticleProgram.SendUniformMat4("uModel", ConfettiEffectBlueRight.transform.data, true);
-	ParticleProgram.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-	ParticleProgram.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+	ParticleProgram->Bind();
+	ParticleProgram->SendUniform("uTex", 0);
+	ParticleProgram->SendUniformMat4("uModel", Transform::Identity().data, true);
+	ParticleProgram->SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	ParticleProgram->SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
 	//render all particles
-	ConfettiEffectRedRight.Render();
-	ConfettiEffectRedLeft.Render();
-	ConfettiEffectOrangeRight.Render();
-	ConfettiEffectOrangeLeft.Render();
-	ConfettiEffectPurpleRight.Render();
-	ConfettiEffectPurpleLeft.Render();
-	ConfettiEffectBlueRight.Render();
-	ConfettiEffectBlueLeft.Render();
-	basicLeftNet.Render();
-	basicRightNet.Render();
-	basicLeftNet1.Render();
-	basicRightNet1.Render();
-	ninjaLeftNet.Render();
-	ninjaRightNet.Render();
-	ninjaLeftNet1.Render();
-	ninjaRightNet1.Render();
-	knightLeftNet.Render();
-	knightRightNet.Render();
-	knightLeftNet1.Render();
-	knightRightNet1.Render();
-	NinjaPetals.Render();
-	NinjaPetals2.Render();
 	DustDashL.Render();
 	DustDashR.Render();
 	DustLand.Render();
@@ -3122,46 +2476,40 @@ void Game::drawScene()
 	HitSparkR.Render();
 	MeterFlame1.Render();
 	MeterFlame2.Render();
-	KnightUltFX.Render();
-	NinjaUltFX1.Render();
-	NinjaUltFX2.Render();
 
-	ParticleProgram.UnBind();
+	ParticleProgram->UnBind();
 
 
 	DeferredComposite.UnBind();
-	DeferredLighting.UnBind();
+	DeferredLighting->UnBind();
 
 	drawHUD();
 
 	/// Compute High Pass ///
 
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("bloomOn", true);
-	BloomHighPass.UnBind();
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("bloomOn", true);
+	BloomHighPass->UnBind();
 
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 
 	//Moving data to the back buffer, at the same time as our last post process
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("uTex", 0);
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("uTex", 0);
 	if (stageVal == 1)
 	{
-		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD1);
-		BloomHighPass.SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
+		BloomHighPass->SendUniform("uThreshold", BLOOM_THRESHOLD1);
+		BloomHighPass->SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
 	}
 	if (stageVal == 2)
 	{
-		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD2);
-		BloomHighPass.SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
+		BloomHighPass->SendUniform("uThreshold", BLOOM_THRESHOLD2);
+		BloomHighPass->SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
 	}
 	if (stageVal == 3)
 	{
-		BloomHighPass.SendUniform("uThreshold", BLOOM_THRESHOLD3);
-		BloomHighPass.SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
+		BloomHighPass->SendUniform("uThreshold", BLOOM_THRESHOLD3);
+		BloomHighPass->SendUniform("uThreshold2", BLOOM_THRESHOLDBRIGHT);
 	}
 
 	WorkBuffer1.Bind();
@@ -3172,22 +2520,16 @@ void Game::drawScene()
 
 	WorkBuffer1.UnBind();
 
-	BloomHighPass.UnBind();
+	BloomHighPass->UnBind();
 
 	/// Compute Blur ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
-		BlurHorizontal.Bind();
-		BlurHorizontal.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
-		else
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		BlurHorizontal->Bind();
+		BlurHorizontal->SendUniform("uTex", 0);
+		BlurHorizontal->SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 
 		WorkBuffer2.Bind();
 
@@ -3197,15 +2539,12 @@ void Game::drawScene()
 
 		WorkBuffer2.UnBind();
 
-		BlurHorizontal.UnBind();
+		BlurHorizontal->UnBind();
 
 		//Vertical Blur
-		BlurVertical.Bind();
-		BlurVertical.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
-		else
-			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		BlurVertical->Bind();
+		BlurVertical->SendUniform("uTex", 0);
+		BlurVertical->SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 
 		WorkBuffer1.Bind();
 
@@ -3215,21 +2554,15 @@ void Game::drawScene()
 
 		WorkBuffer1.UnBind();
 
-		BlurVertical.UnBind();
+		BlurVertical->UnBind();
 	}
 
-	//drawHUD();
-
-
 	/// Composite To Back Buffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
-	BloomComposite.Bind();
-	BloomComposite.SendUniform("uScene", 0);
-	BloomComposite.SendUniform("uBloom", 1);
+	BloomComposite->Bind();
+	BloomComposite->SendUniform("uScene", 0);
+	BloomComposite->SendUniform("uBloom", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
@@ -3240,7 +2573,7 @@ void Game::drawScene()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
-	BloomComposite.UnBind();
+	BloomComposite->UnBind();
 
 
 	glutSwapBuffers();
@@ -3262,25 +2595,22 @@ void Game::drawCSS()
 	WorkBuffer2.Clear();
 
 	/// Create Scene From GBuffer ///
-	if (FULLSCREEN)
 		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	
+	DeferredLighting->Bind();
+	DeferredLighting->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting->SendUniform("uScene", 0);
+	DeferredLighting->SendUniform("uShadowMap", 1);
+	DeferredLighting->SendUniform("uNormalMap", 2);
+	DeferredLighting->SendUniform("uPositionMap", 3);
+	//DeferredLighting->SendUniform("uEdgeMap", 4);
+	//DeferredLighting->SendUniform("uStepTexture", 4);
 
-	DeferredLighting.Bind();
-	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
-	DeferredLighting.SendUniform("uScene", 0);
-	DeferredLighting.SendUniform("uShadowMap", 1);
-	DeferredLighting.SendUniform("uNormalMap", 2);
-	DeferredLighting.SendUniform("uPositionMap", 3);
-	//DeferredLighting.SendUniform("uEdgeMap", 4);
-	//DeferredLighting.SendUniform("uStepTexture", 4);
-
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting->SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting->SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting->SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
 
@@ -3305,7 +2635,7 @@ void Game::drawCSS()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
-	DeferredLighting.UnBind();
+	DeferredLighting->UnBind();
 
 	//===============================================================
 		//DeferredComposite.Bind();
@@ -3322,10 +2652,7 @@ void Game::drawCSS()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
-	if (FULLSCREEN)
 		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -3333,18 +2660,18 @@ void Game::drawCSS()
 //////////////////////////
 	//now ready to draw 2d
 //////////////////////////
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 //draws everything in menu
 	sortObjects(1);
 	for (int i = 0; i < (int)cssObjects.size(); i++) {
-		cssObjects[i]->draw(GBufferPass, 1);
+		cssObjects[i]->draw(*GBufferPass, 1);
 	}
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -3360,70 +2687,55 @@ void Game::drawCSS()
 	glDisable(GL_BLEND);
 	//===============================================================
 
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("bloomOn", false);
-	BloomHighPass.UnBind();
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("bloomOn", false);
+	BloomHighPass->UnBind();
 
 		/// Compute High Pass ///
-	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	//Moving data to the back buffer, at the same time as our last post process
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("uTex", 0);
+	BloomHighPass->SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
-	BloomHighPass.UnBind();
+	BloomHighPass->UnBind();
 
 	/// Compute Blur ///
-	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
-		BlurHorizontal.Bind();
-		BlurHorizontal.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
-		else
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		BlurHorizontal->Bind();
+		BlurHorizontal->SendUniform("uTex", 0);
+			BlurHorizontal->SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 		WorkBuffer2.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
-		BlurHorizontal.UnBind();
+		BlurHorizontal->UnBind();
 
 		//Vertical Blur
-		BlurVertical.Bind();
-		BlurVertical.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
-		else
-			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		BlurVertical->Bind();
+		BlurVertical->SendUniform("uTex", 0);
+			BlurVertical->SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 		WorkBuffer1.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
-		BlurVertical.UnBind();
+		BlurVertical->UnBind();
 	}
 
 	/// Composite To Back Buffer ///
-	if (FULLSCREEN)
 		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	BloomComposite.Bind();
-	BloomComposite.SendUniform("uScene", 0);
-	BloomComposite.SendUniform("uBloom", 1);
+	BloomComposite->Bind();
+	BloomComposite->SendUniform("uScene", 0);
+	BloomComposite->SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
@@ -3432,7 +2744,7 @@ void Game::drawCSS()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	BloomComposite.UnBind();
+	BloomComposite->UnBind();
 
 	glutSwapBuffers();
 }
@@ -3454,25 +2766,22 @@ void Game::drawSSS()
 	WorkBuffer2.Clear();
 
 	/// Create Scene From GBuffer ///
-	if (FULLSCREEN)
 		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	
+	DeferredLighting->Bind();
+	DeferredLighting->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting->SendUniform("uScene", 0);
+	DeferredLighting->SendUniform("uShadowMap", 1);
+	DeferredLighting->SendUniform("uNormalMap", 2);
+	DeferredLighting->SendUniform("uPositionMap", 3);
+	//DeferredLighting->SendUniform("uEdgeMap", 4);
+	//DeferredLighting->SendUniform("uStepTexture", 4);
 
-	DeferredLighting.Bind();
-	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
-	DeferredLighting.SendUniform("uScene", 0);
-	DeferredLighting.SendUniform("uShadowMap", 1);
-	DeferredLighting.SendUniform("uNormalMap", 2);
-	DeferredLighting.SendUniform("uPositionMap", 3);
-	//DeferredLighting.SendUniform("uEdgeMap", 4);
-	//DeferredLighting.SendUniform("uStepTexture", 4);
-
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting->SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting->SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting->SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
 
@@ -3497,7 +2806,7 @@ void Game::drawSSS()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
-	DeferredLighting.UnBind();
+	DeferredLighting->UnBind();
 
 	//===============================================================
 		//DeferredComposite.Bind();
@@ -3514,10 +2823,7 @@ void Game::drawSSS()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
-	if (FULLSCREEN)
 		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -3525,18 +2831,18 @@ void Game::drawSSS()
 //////////////////////////
 	//now ready to draw 2d
 //////////////////////////
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draws everything in menu
 	sortObjects(2);
 	for (int i = 0; i < (int)sssObjects.size(); i++) {
-		sssObjects[i]->draw(GBufferPass, 1);
+		sssObjects[i]->draw(*GBufferPass, 1);
 	}
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -3552,70 +2858,54 @@ void Game::drawSSS()
 	glDisable(GL_BLEND);
 	//===============================================================
 
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("bloomOn", false);
-	BloomHighPass.UnBind();
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("bloomOn", false);
+	BloomHighPass->UnBind();
 
 		/// Compute High Pass ///
-	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
 	//Moving data to the back buffer, at the same time as our last post process
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("uTex", 0);
+	BloomHighPass->SendUniform("uThreshold", 1.0f);
 	WorkBuffer1.Bind();
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	DrawFullScreenQuad();
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	WorkBuffer1.UnBind();
-	BloomHighPass.UnBind();
+	BloomHighPass->UnBind();
 
 	/// Compute Blur ///
-	if (FULLSCREEN)
 		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
-	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
-	{
+	for (int i = 0; i < BLOOM_BLUR_PASSES; i++){
 		//Horizontal Blur
-		BlurHorizontal.Bind();
-		BlurHorizontal.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
-		else
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		BlurHorizontal->Bind();
+		BlurHorizontal->SendUniform("uTex", 0);
+			BlurHorizontal->SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 		WorkBuffer2.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer1.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer2.UnBind();
-		BlurHorizontal.UnBind();
+		BlurHorizontal->UnBind();
 
 		//Vertical Blur
-		BlurVertical.Bind();
-		BlurVertical.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
-		else
-			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		BlurVertical->Bind();
+		BlurVertical->SendUniform("uTex", 0);
+			BlurVertical->SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 		WorkBuffer1.Bind();
 		glBindTexture(GL_TEXTURE_2D, WorkBuffer2.GetColorHandle(0));
 		DrawFullScreenQuad();
 		glBindTexture(GL_TEXTURE_2D, GL_NONE);
 		WorkBuffer1.UnBind();
-		BlurVertical.UnBind();
+		BlurVertical->UnBind();
 	}
 
 	/// Composite To Back Buffer ///
-	if (FULLSCREEN)
 		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	BloomComposite.Bind();
-	BloomComposite.SendUniform("uScene", 0);
-	BloomComposite.SendUniform("uBloom", 1);
+	BloomComposite->Bind();
+	BloomComposite->SendUniform("uScene", 0);
+	BloomComposite->SendUniform("uBloom", 1);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
 	glActiveTexture(GL_TEXTURE1);
@@ -3624,7 +2914,7 @@ void Game::drawSSS()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
-	BloomComposite.UnBind();
+	BloomComposite->UnBind();
 
 	glutSwapBuffers();
 }
@@ -3646,10 +2936,7 @@ void Game::drawHUD()
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
 	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);//create ortho
-	if (FULLSCREEN)
-		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -3657,11 +2944,11 @@ void Game::drawHUD()
 	//////////////////////////
 	//now ready to draw 2d
 	//////////////////////////
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	Transform hudLoc = Transform::Identity();
 	//Draw Player 1 HUD
@@ -3671,7 +2958,7 @@ void Game::drawHUD()
 	hudLoc.Scale(280.0f);
 	hudLoc.Translate(glm::vec3(-535, 370, 0));
 	hudLoc.RotateY(90.0f);
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	HudBack0.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
@@ -3683,39 +2970,39 @@ void Game::drawHUD()
 	hudLoc.Translate(glm::vec3(-535, 370, 0));
 	hudLoc.RotateY(90.0f);
 
-	HPShader.Bind();
+	HPShader->Bind();
 	hudTransform = Transform::Identity();
-	HPShader.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	HPShader.SendUniformMat4("uProj", hudProjection.data, true);
+	HPShader->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	HPShader->SendUniformMat4("uProj", hudProjection.data, true);
 
-	HPShader.SendUniformMat4("uModel", hudLoc.data, true);
-	HPShader.SendUniform("uMax", players[0]->maxHealth);
-	HPShader.SendUniform("uPlayer", 0);//0 right side, 1,left
+	HPShader->SendUniformMat4("uModel", hudLoc.data, true);
+	HPShader->SendUniform("uMax", players[0]->maxHealth);
+	HPShader->SendUniform("uPlayer", 0);//0 right side, 1,left
 	///draw grey
-	HPShader.SendUniform("uHP", players[0]->greyHealth);
-	HPShader.SendUniform("uGrey", true);
+	HPShader->SendUniform("uHP", players[0]->greyHealth);
+	HPShader->SendUniform("uGrey", true);
 	Bar0.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///draw hp
-	HPShader.SendUniform("uHP", players[0]->currentHealth);
-	HPShader.SendUniform("uGrey", false);
+	HPShader->SendUniform("uHP", players[0]->currentHealth);
+	HPShader->SendUniform("uGrey", false);
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///unbind
 	Bar0.UnBind();
 
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draw quad for overlay
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(280.0f);
 	hudLoc.Translate(glm::vec3(-535, 370, 0));
 	hudLoc.RotateY(90.0f);
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	Overlay0.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
@@ -3728,7 +3015,7 @@ void Game::drawHUD()
 	hudLoc.Scale(280.0f);
 	hudLoc.Translate(glm::vec3(535, 370, 0));
 	hudLoc.RotateY(90.0f);
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	HudBack1.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
@@ -3740,40 +3027,40 @@ void Game::drawHUD()
 	hudLoc.Translate(glm::vec3(535, 370, 0));
 	hudLoc.RotateY(90.0f);
 
-	HPShader.Bind();
+	HPShader->Bind();
 	hudTransform = Transform::Identity();
-	HPShader.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	HPShader.SendUniformMat4("uProj", hudProjection.data, true);
+	HPShader->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	HPShader->SendUniformMat4("uProj", hudProjection.data, true);
 
-	HPShader.SendUniformMat4("uModel", hudLoc.data, true);
-	HPShader.SendUniform("uMax", players[1]->maxHealth);
-	HPShader.SendUniform("uPlayer", 1);//0 right side, 1,left
+	HPShader->SendUniformMat4("uModel", hudLoc.data, true);
+	HPShader->SendUniform("uMax", players[1]->maxHealth);
+	HPShader->SendUniform("uPlayer", 1);//0 right side, 1,left
 	///draw grey
-	HPShader.SendUniform("uHP", players[1]->greyHealth);
-	HPShader.SendUniform("uGrey", true);
+	HPShader->SendUniform("uHP", players[1]->greyHealth);
+	HPShader->SendUniform("uGrey", true);
 	Bar1.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///draw hp
-	HPShader.SendUniform("uHP", players[1]->currentHealth);
-	HPShader.SendUniform("uGrey", false);
+	HPShader->SendUniform("uHP", players[1]->currentHealth);
+	HPShader->SendUniform("uGrey", false);
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 	///unbind
 	Bar1.UnBind();
 
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
 	//hudTransform.Translate(vec3(WINDOW_WIDTH * -0.5f, WINDOW_HEIGHT* -0.5f, 0));
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draw quad for overlay
 	hudLoc = Transform::Identity();
 	hudLoc.Scale(280.0f);
 	hudLoc.Translate(glm::vec3(535, 370, 0));
 	hudLoc.RotateY(90.0f);
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	Overlay1.Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
@@ -3788,16 +3075,16 @@ void Game::drawHUD()
 	if (secO > 9) secO = 9;
 
 	//Draw Time
-	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->Bind();
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 	///sec tens
 	hudLoc = Transform();
 	hudLoc.Scale(80.0f);
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(20, 450, 0));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	time[secT]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
@@ -3808,14 +3095,14 @@ void Game::drawHUD()
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(135, 450, 0.1f));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	time[secO]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
 
 	time[secO]->UnBind();
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -3831,64 +3118,6 @@ void Game::drawHUD()
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
-}
-
-void Game::drawScore() {
-
-	GBuffer.Bind();
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glDepthMask(GL_FALSE);  // disable writes to Z-Buffer
-	//glDisable(GL_DEPTH_TEST);  // disable depth-testing
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_LIGHTING);
-
-	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
-	///score
-	Transform hudLoc = Transform::Identity();
-	hudLoc.Scale(2.0f);
-	hudLoc.RotateX(-8.0f);
-	hudLoc.RotateY(90.0f);
-	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(-0.8f, 3.1f, -12.52f));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[score1 % 10]->Bind();
-	glBindVertexArray(HudObj.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
-	///score
-	hudLoc = Transform::Identity();
-	hudLoc.Scale(2.0f);
-	hudLoc.RotateX(-8.0f);
-	hudLoc.RotateY(90.0f);
-	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(2.2f, 3.1f, -12.51f));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[10]->Bind();
-	glBindVertexArray(HudObj.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
-	///score
-	hudLoc = Transform::Identity();
-	hudLoc.Scale(2.0f);
-	hudLoc.RotateX(-8.0f);
-	hudLoc.RotateY(90.0f);
-	hudLoc.RotateX(-90.0f);
-	hudLoc.Translate(glm::vec3(5.2f, 3.1f, -12.5f));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
-	time[score2 % 10]->Bind();
-	glBindVertexArray(HudObj.VAO);
-	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
-
-
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_LIGHTING);
-	glDisable(GL_BLEND);
-
-	GBufferPass.UnBind();
-	GBuffer.UnBind();
 }
 
 void Game::drawMenu()
@@ -3907,25 +3136,22 @@ void Game::drawMenu()
 	WorkBuffer2.Clear();
 
 	/// Create Scene From GBuffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
-	DeferredLighting.Bind();
-	DeferredLighting.SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
-	DeferredLighting.SendUniform("uScene", 0);
-	DeferredLighting.SendUniform("uShadowMap", 1);
-	DeferredLighting.SendUniform("uNormalMap", 2);
-	DeferredLighting.SendUniform("uPositionMap", 3);
-	//DeferredLighting.SendUniform("uEdgeMap", 4);
-	//DeferredLighting.SendUniform("uStepTexture", 4);
+	DeferredLighting->Bind();
+	DeferredLighting->SendUniformMat4("ViewToShadowMap", ViewToShadowMap.data, true);
+	DeferredLighting->SendUniform("uScene", 0);
+	DeferredLighting->SendUniform("uShadowMap", 1);
+	DeferredLighting->SendUniform("uNormalMap", 2);
+	DeferredLighting->SendUniform("uPositionMap", 3);
+	//DeferredLighting->SendUniform("uEdgeMap", 4);
+	//DeferredLighting->SendUniform("uStepTexture", 4);
 
-	DeferredLighting.SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
-	DeferredLighting.SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
-	DeferredLighting.SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
-	DeferredLighting.SendUniform("LightSpecularExponent", 500.0f);
+	DeferredLighting->SendUniform("LightDirection", glm::vec3(GameCamera.CameraTransform.GetInverse().getRotationMat() * glm::normalize(ShadowTransform.GetForward())));
+	DeferredLighting->SendUniform("LightAmbient", glm::vec3(0.6f, 0.6f, 0.6f)); //You can LERP through colours to make night to day cycles
+	DeferredLighting->SendUniform("LightDiffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecular", glm::vec3(0.6f, 0.6f, 0.6f));
+	DeferredLighting->SendUniform("LightSpecularExponent", 500.0f);
 
 	DeferredComposite.Bind();
 
@@ -3950,10 +3176,10 @@ void Game::drawMenu()
 	glBindTexture(GL_TEXTURE_2D, GL_NONE); //Why was this not here in week 10 vid?
 
 	DeferredComposite.UnBind();
-	DeferredLighting.UnBind();
+	DeferredLighting->UnBind();
 
-//===============================================================
-	//DeferredComposite.Bind();
+	//===============================================================
+		//DeferredComposite.Bind();
 	DeferredComposite.Bind();
 
 	glEnable(GL_BLEND);
@@ -3967,10 +3193,7 @@ void Game::drawMenu()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
-	if (FULLSCREEN)
-		gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
-	else
-		gluOrtho2D((float)WINDOW_WIDTH * -0.5f, (float)WINDOW_WIDTH * 0.5f, (float)WINDOW_HEIGHT * -0.5f, (float)WINDOW_HEIGHT * 0.5f);//create ortho
+	gluOrtho2D((float)FULLSCREEN_WIDTH * -0.5f, (float)FULLSCREEN_WIDTH * 0.5f, (float)FULLSCREEN_HEIGHT * -0.5f, (float)FULLSCREEN_HEIGHT * 0.5f);//create ortho
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();//save old state
 	glLoadIdentity();//reset
@@ -3978,18 +3201,18 @@ void Game::drawMenu()
 	//////////////////////////
 	//now ready to draw 2d
 	//////////////////////////
-	GBufferPass.Bind();
+	GBufferPass->Bind();
 	hudTransform = Transform::Identity();
-	GBufferPass.SendUniformMat4("uView", hudTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", hudProjection.data, true);
+	GBufferPass->SendUniformMat4("uView", hudTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", hudProjection.data, true);
 
 	//draws everything in menu
 	sortObjects(0);
 	for (int i = 0; i < (int)menuObjects.size(); i++) {
-		menuObjects[i]->draw(GBufferPass, 1);
+		menuObjects[i]->draw(*GBufferPass, 1);
 	}
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 
 	//restore projection matrix
 	glMatrixMode(GL_PROJECTION);
@@ -4006,22 +3229,19 @@ void Game::drawMenu()
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 
-//===============================================================
+	//===============================================================
 
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("bloomOn", false);
-	BloomHighPass.UnBind();
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("bloomOn", false);
+	BloomHighPass->UnBind();
 
 	/// Compute High Pass ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 
 	//Moving data to the back buffer, at the same time as our last post process
-	BloomHighPass.Bind();
-	BloomHighPass.SendUniform("uTex", 0);
-	BloomHighPass.SendUniform("uThreshold", 1.0f);
+	BloomHighPass->Bind();
+	BloomHighPass->SendUniform("uTex", 0);
+	BloomHighPass->SendUniform("uThreshold", 1.0f);
 
 	WorkBuffer1.Bind();
 
@@ -4031,22 +3251,16 @@ void Game::drawMenu()
 
 	WorkBuffer1.UnBind();
 
-	BloomHighPass.UnBind();
+	BloomHighPass->UnBind();
 
 	/// Compute Blur ///
-	if (FULLSCREEN)
-		glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
-	else
-		glViewport(0, 0, (GLsizei)(WINDOW_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(WINDOW_HEIGHT / BLOOM_DOWNSCALE));
+	glViewport(0, 0, (GLsizei)(FULLSCREEN_WIDTH / BLOOM_DOWNSCALE), (GLsizei)(FULLSCREEN_HEIGHT / BLOOM_DOWNSCALE));
 	for (int i = 0; i < BLOOM_BLUR_PASSES; i++)
 	{
 		//Horizontal Blur
-		BlurHorizontal.Bind();
-		BlurHorizontal.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
-		else
-			BlurHorizontal.SendUniform("uPixelSize", 1.0f / WINDOW_WIDTH);
+		BlurHorizontal->Bind();
+		BlurHorizontal->SendUniform("uTex", 0);
+		BlurHorizontal->SendUniform("uPixelSize", 1.0f / FULLSCREEN_WIDTH);
 
 		WorkBuffer2.Bind();
 
@@ -4056,15 +3270,12 @@ void Game::drawMenu()
 
 		WorkBuffer2.UnBind();
 
-		BlurHorizontal.UnBind();
+		BlurHorizontal->UnBind();
 
 		//Vertical Blur
-		BlurVertical.Bind();
-		BlurVertical.SendUniform("uTex", 0);
-		if (FULLSCREEN)
-			BlurVertical.SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
-		else
-			BlurVertical.SendUniform("uPixelSize", 1.0f / WINDOW_HEIGHT);
+		BlurVertical->Bind();
+		BlurVertical->SendUniform("uTex", 0);
+		BlurVertical->SendUniform("uPixelSize", 1.0f / FULLSCREEN_HEIGHT);
 
 		WorkBuffer1.Bind();
 
@@ -4074,21 +3285,18 @@ void Game::drawMenu()
 
 		WorkBuffer1.UnBind();
 
-		BlurVertical.UnBind();
+		BlurVertical->UnBind();
 	}
 
 	//drawHUD();
 
 
 	/// Composite To Back Buffer ///
-	if (FULLSCREEN)
-		glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
-	else
-		glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+	glViewport(0, 0, FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT);
 
-	BloomComposite.Bind();
-	BloomComposite.SendUniform("uScene", 0);
-	BloomComposite.SendUniform("uBloom", 1);
+	BloomComposite->Bind();
+	BloomComposite->SendUniform("uScene", 0);
+	BloomComposite->SendUniform("uBloom", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, DeferredComposite.GetColorHandle(0));
@@ -4099,7 +3307,7 @@ void Game::drawMenu()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, GL_NONE);
 
-	BloomComposite.UnBind();
+	BloomComposite->UnBind();
 
 
 	glutSwapBuffers();
@@ -4115,9 +3323,9 @@ void Game::drawTime()
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_LIGHTING);
 
-	GBufferPass.Bind();
-	GBufferPass.SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
-	GBufferPass.SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
+	GBufferPass->Bind();
+	GBufferPass->SendUniformMat4("uView", GameCamera.CameraTransform.GetInverse().data, true);
+	GBufferPass->SendUniformMat4("uProj", GameCamera.CameraProjection.data, true);
 
 	int timer = 100 - (int)TotalGameTime;
 	if (timer < 0) timer = 0;
@@ -4135,7 +3343,7 @@ void Game::drawTime()
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(2.1f, 15.5f, 0));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 	time[secT]->Bind();
 	glBindVertexArray(HudObj.VAO);
 	glDrawArrays(GL_TRIANGLES, 0, HudObj.GetNumVertices());
@@ -4147,7 +3355,7 @@ void Game::drawTime()
 	hudLoc.RotateY(90.0f);
 	hudLoc.RotateX(-90.0f);
 	hudLoc.Translate(glm::vec3(5.1f, 15.5f, 0));
-	GBufferPass.SendUniformMat4("uModel", hudLoc.data, true);
+	GBufferPass->SendUniformMat4("uModel", hudLoc.data, true);
 
 	time[secO]->Bind();
 	glBindVertexArray(HudObj.VAO);
@@ -4162,7 +3370,7 @@ void Game::drawTime()
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 
-	GBufferPass.UnBind();
+	GBufferPass->UnBind();
 	GBuffer.UnBind();
 }
 
@@ -4226,13 +3434,10 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 	case 'r': //w
 		if (scene == 3) {
 			scene = 3;
-			gameDone = false;
-			score1 = 0;
-			score2 = 0;
 			players[0]->respawn();
-			players[0]->setPosition(glm::vec3(-5, 0, 0));
 			players[0]->facingRight = true;
 			players[1]->respawn();
+			players[0]->setPosition(glm::vec3(-5, 0, 0));
 			players[1]->setPosition(glm::vec3(5, 0, 0));
 			players[1]->facingRight = false;
 			//updateTimer = new Timer();
@@ -4244,8 +3449,8 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 			//players[1] = (new Ninja("./Assets/Models/Knight.obj", "./Assets/Textures/player2.png"));
 			p1Char = 1;
 			p2Char = 2;
-			players[0] = new charBlueDragon(knightTemp);
-			players[1] = new charBlueDragon(knightTemp);
+			players[0] = new charBlueDragon(blueTemp);
+			players[1] = new charBlueDragon(blueTemp);
 			//players[1] = new charRedDevil(ninjaTemp);
 			players[1]->bodyTexture.Load("./Assets/Textures/blueDtextureBlue.png");
 			
@@ -4263,14 +3468,11 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 			for (int i = 0; i < (int)stage1_env_objs.size(); i++)
 				findObjects(3, stage1_env_objs[i])->hide = false;
 			scene = 3;
-			gameDone = false;
-			score1 = 0;
-			score2 = 0;
 			players[0]->respawn();
-			players[0]->setPosition(glm::vec3(-5, 0, 0));
 			players[0]->facingRight = true;
 			players[1]->respawn();
 			players[1]->setPosition(glm::vec3(5, 0, 0));
+			players[0]->setPosition(glm::vec3(-5, 0, 0));
 			players[1]->facingRight = false;
 			//updateTimer = new Timer();
 			TotalGameTime = 0.0f;
@@ -4385,12 +3587,12 @@ void Game::keyboardUp(unsigned char key, int mouseX, int mouseY)
 		}
 		break;
 	case '.': //a
-		//GBufferPass.ReloadShader();
+		//GBufferPass->ReloadShader();
 		//AdShader.ReloadShader();
-		//BloomHighPass.ReloadShader();
+		//BloomHighPass->ReloadShader();
 		//PointLight.ReloadShader();
 		//NetShader.ReloadShader();
-		DeferredLighting.ReloadShader();
+		DeferredLighting->ReloadShader();
 		std::cout << "Reloaded Shaders\n";
 		//inputs2[4] = false;
 		break;

@@ -73,7 +73,6 @@ public:
 	void drawSSS();
 	void drawHUD();
 	void drawTime();
-	void drawScore();
 	void drawMenu();
 	void loadTime();
 	/* input callback functions */
@@ -86,38 +85,29 @@ public:
 	Timer *updateTimer = nullptr;
 	float TotalGameTime = 0.0f;
 
-	/// PROGRAMS ///
-	ShaderProgram StaticGeometry;
-	ShaderProgram GBufferPass;
-	ShaderProgram BloomHighPass;
-	ShaderProgram SobelPass;
-	ShaderProgram BlurHorizontal;
-	ShaderProgram BlurVertical;
-	ShaderProgram BloomComposite;
-	ShaderProgram DeferredLighting;
-	ShaderProgram AniShader;
-	ShaderProgram PointLight;
-	ShaderProgram ParticleProgram;
-	ShaderProgram AdShader;
-	ShaderProgram GrayScale;
-	ShaderProgram NetShader;
-	ShaderProgram HPShader;
+	/// Shaders
+	ShaderProgram* GBufferPass;
+	ShaderProgram* BloomHighPass;
+	ShaderProgram* SobelPass;
+	ShaderProgram* BlurHorizontal;
+	ShaderProgram* BlurVertical;
+	ShaderProgram* BloomComposite;
+	ShaderProgram* DeferredLighting;
+	ShaderProgram* AniShader;
+	ShaderProgram* PointLight;
+	ShaderProgram* ParticleProgram;
+	ShaderProgram* GrayScale;
+	ShaderProgram* HPShader;
 
-	Mesh boxMesh;
-	Texture boxTexture;
+	/// Character Temps
+	charBlueDragon* blueTemp;
 
-	charBlueDragon* knightTemp;
-	//charRedDevil* ninjaTemp;
-
+	/// Players Characters
 	Character* players[2];
-
-	std::vector<bool> inputs;
-	std::vector<bool> inputs2;
 
 	/// ENTITIES ///
 	std::vector<Object*> gameObjects;
 	std::vector<PointLightObj*> pointLights;
-	Object* hitboxObj;
 	std::vector<Object*> menuObjects;
 	std::vector<Object*> cssObjects;
 	std::vector<Object*> sssObjects;
@@ -125,9 +115,6 @@ public:
 	std::vector<Object*> tutObjects;
 
 	unsigned int scene = 0; //0=menu, 1=selecting, 2=fighting
-	bool gameDone = false;
-	bool stun = true;
-	int ultRumbleTimer = 0;
 
 	//Menu
 	unsigned int selectedButton = 0;
@@ -165,47 +152,18 @@ public:
 	Texture P1Line;
 	Texture P2Line;
 	Texture StepTexture;
+
 	//Particle Effects
-	ParticleEffect ConfettiEffectBlueRight;
-	ParticleEffect ConfettiEffectBlueLeft;
-	ParticleEffect ConfettiEffectRedRight;
-	ParticleEffect ConfettiEffectRedLeft;
-	ParticleEffect ConfettiEffectOrangeRight;
-	ParticleEffect ConfettiEffectOrangeLeft;
-	ParticleEffect ConfettiEffectPurpleRight;
-	ParticleEffect ConfettiEffectPurpleLeft;
-	ParticleEffect basicLeftNet;
-	ParticleEffect basicRightNet;
-	ParticleEffect basicLeftNet1;
-	ParticleEffect basicRightNet1;
-	ParticleEffect knightLeftNet;
-	ParticleEffect knightRightNet;
-	ParticleEffect knightLeftNet1;
-	ParticleEffect knightRightNet1;
-	ParticleEffect ninjaLeftNet;
-	ParticleEffect ninjaRightNet;
-	ParticleEffect ninjaLeftNet1;
-	ParticleEffect ninjaRightNet1;
-	ParticleEffect NinjaPetals;
-	ParticleEffect NinjaPetals2;
 	ParticleEffect DustLand;
 	ParticleEffect DustDashL;
 	ParticleEffect DustDashR;
-
-	//new
 	ParticleEffect DustLaunch;
 	ParticleEffect HitSparkL;
 	ParticleEffect HitSparkR;
 	ParticleEffect MeterFlame1;
 	ParticleEffect MeterFlame2;
 
-	ParticleEffect KnightUltFX;
-	ParticleEffect NinjaUltFX1;
-	ParticleEffect NinjaUltFX2;
-
-
 	std::vector<Texture*> time;
-	std::vector<Hitbox*>Netbox;//2
 
 	/// FRAMEBUFFERS ///
 	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
@@ -217,8 +175,6 @@ public:
 	FrameBuffer WorkBuffer2;
 	FrameBuffer HudMap;
 
-	//Transform CameraTransform;
-	//Transform CameraProjection;
 	Camera GameCamera;
 	glm::vec3 seekPoint;
 
@@ -229,13 +185,6 @@ public:
 
 	Transform ViewToShadowMap;
 
-	///God Rays Stuff
-	/*FrameBuffer godRaysBuffer1;
-	FrameBuffer godRaysBuffer2;
-
-	ShaderProgram godRaysRadialBlur;
-	ShaderProgram godRaysComposite;*/
-
 	void updateInputs();
 
 	//walls
@@ -245,12 +194,6 @@ public:
 
 	//controller
 	InputHandler* Controllers;
-
-	int score1;
-	int score2;
-
-	bool p1Score = false;
-	bool p2Score = false;
 
 	bool grayscale = false;
 	bool toonActive = false;
@@ -266,7 +209,6 @@ public:
 	bool hornPlaying = false;
 	bool thirtyPlaying = false;
 	bool onePlaying = false;
-	//bool knightJump;
 
 	bool soundPitched = false;
 	bool soundNormalized = true;
