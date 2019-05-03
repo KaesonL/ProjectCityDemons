@@ -87,6 +87,7 @@
     <ClCompile Include="ParticleEffect.cpp" />
     <ClCompile Include="PointLightObj.cpp" />
     <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="hitbox.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="Overlay.h" />
     <ClInclude Include="ParticleEffect.h" />
     <ClInclude Include="PointLightObj.h" />
     <ClInclude Include="Random.h" />

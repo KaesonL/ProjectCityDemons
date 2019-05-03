@@ -35,18 +35,75 @@ public:
 	void init(Character* players[2]);//called from game, passes characters for players
 	bool update(); //updates scene, returns true if still running
 	void draw(); //draws scene
-	unsigned int close();//cane called from game to close scene and get next action
+	unsigned int close();//can be called from game to close scene and get next action
+
+
+	void sortObjects();
+	Object* findObject(std::string _name);
+	PointLightObj* findLight(std::string _name);
 
 private:
-	//scene objects
-	std::vector<Object*> gameObjects;
+
+	// Entities
+	std::vector<Object*> Objects;
 	std::vector<PointLightObj*> pointLights;
 	Character* Players[2];
-	InputHandler* Controllers;//updating players and inputs could be done in game?
 
-	//timer stuff
+	// Collision Positions
+	float rightWall;
+	float leftWall;
+	float floor;
+
+	// Input Handler Pointer
+	InputHandler* Controllers;
+
+	// Shaders
+	ShaderProgram* GBufferPass;
+	ShaderProgram* BloomHighPass;
+	ShaderProgram* SobelPass;
+	ShaderProgram* BlurHorizontal;
+	ShaderProgram* BlurVertical;
+	ShaderProgram* BloomComposite;
+	ShaderProgram* DeferredLighting;
+	ShaderProgram* GrayScale;
+	ShaderProgram* PointLight;
+	ShaderProgram* AniShader;
+	ShaderProgram* ParticleProgram;
+
+	// Camera
+	Camera GameCamera;
+	glm::vec3 seekPoint;
+
+	// Directional Light & Shadow
+	Transform ShadowTransform;
+	Transform ShadowProjection;
+	Transform ViewToShadowMap;
+
+	// Particle Effects
+
+	//Particle Effects
+	ParticleEffect DustLand;
+	ParticleEffect DustDashL;
+	ParticleEffect DustDashR;
+	ParticleEffect DustLaunch;
+	ParticleEffect HitSparkL;
+	ParticleEffect HitSparkR;
+	ParticleEffect MeterFlame1;
+	ParticleEffect MeterFlame2;
+
+	// Timer stuff
 	Timer *updateTimer = nullptr;
 	float TotalGameTime = 0.0f;
-	std::vector<Texture*> time;
 
+	// Sound
+	Sound musicTrack;
+	Sound hitFX;
+	Sound gameEnd;
+
+	FMOD_VECTOR defaultPos;
+
+	FMOD::Channel* musicChannel = NULL;
+	FMOD::Channel* sfxChannel = NULL;
+	FMOD::Channel* p1Channel = NULL;
+	FMOD::Channel* p2Channel = NULL;
 };

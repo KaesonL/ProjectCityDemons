@@ -82,6 +82,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Game Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ParticleEffect.h">
@@ -142,6 +145,9 @@
       <Filter>Object Files\Primative</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
+      <Filter>Game Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Overlay.h">
       <Filter>Game Files</Filter>
     </ClInclude>
   </ItemGroup>
