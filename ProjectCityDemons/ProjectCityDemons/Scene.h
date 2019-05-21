@@ -26,13 +26,19 @@
 //vsync
 #include "include/wglext.h"
 
+#define BLOOM_THRESHOLDBRIGHT	0.95f
+#define BLOOM_THRESHOLD			0.01f
+#define BLOOM_DOWNSCALE			2.0f
+#define BLOOM_BLUR_PASSES		20
+#define SHADOW_RESOLUTION		8192
+
 class Scene{
 	
 public:
-	Scene(); //initlaizes everything in scene
+	Scene(unsigned int, unsigned int, unsigned int); //initlaizes everything in scene
 	~Scene(); // unloads all objects
 
-	void init(Character* players[2]);//called from game, passes characters for players
+	void init(Character* _players[2], InputHandler* _Controllers);//called from game, passes characters for players
 	bool update(); //updates scene, returns true if still running
 	void draw(); //draws scene
 	unsigned int close();//can be called from game to close scene and get next action
@@ -42,7 +48,14 @@ public:
 	Object* findObject(std::string _name);
 	PointLightObj* findLight(std::string _name);
 
+	void loadShaders();
+	void loadParticles();
+
 private:
+	// Window Peram
+	unsigned int WINDOW_WIDTH;
+	unsigned int WINDOW_HEIGHT;
+	unsigned int FRAMES_PER_SECOND;
 
 	// Entities
 	std::vector<Object*> Objects;
@@ -70,6 +83,8 @@ private:
 	ShaderProgram* AniShader;
 	ShaderProgram* ParticleProgram;
 
+	Texture StepTexture;
+
 	// Camera
 	Camera GameCamera;
 	glm::vec3 seekPoint;
@@ -80,8 +95,6 @@ private:
 	Transform ViewToShadowMap;
 
 	// Particle Effects
-
-	//Particle Effects
 	ParticleEffect DustLand;
 	ParticleEffect DustDashL;
 	ParticleEffect DustDashR;
@@ -90,6 +103,16 @@ private:
 	ParticleEffect HitSparkR;
 	ParticleEffect MeterFlame1;
 	ParticleEffect MeterFlame2;
+
+	// Frame Buffers
+	FrameBuffer GBuffer; //Utility buffer to hold positions and normals
+	FrameBuffer DeferredComposite; //Where the actual scene is loaded to
+	FrameBuffer ShadowMap;
+	FrameBuffer EdgeMap;
+	//Bloom work buffers
+	FrameBuffer WorkBuffer1;
+	FrameBuffer WorkBuffer2;
+	FrameBuffer HudMap;
 
 	// Timer stuff
 	Timer *updateTimer = nullptr;

@@ -18,6 +18,7 @@
 #include "InputHandler.h"
 #pragma comment(lib, "Xinput9_1_0.lib") 
 #include "Timer.h"
+#include "Scene.h"
 
 //debugging
 #include <chrono>
@@ -104,6 +105,7 @@ public:
 
 	/// Players Characters
 	Character* players[2];
+	Scene* gameScene;
 
 	/// ENTITIES ///
 	std::vector<Object*> gameObjects;

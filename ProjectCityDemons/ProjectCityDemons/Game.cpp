@@ -110,6 +110,7 @@ void Game::initializeGame()
 	stage3_env_objs.push_back("ninja_bridge");
 	gameObjects.push_back(new Object("./Assets/Models/ninjaSides", "./Assets/Textures/ninjaSides.png", "ninja_sides"));
 	stage3_env_objs.push_back("ninja_sides");
+	gameScene = new Scene(FULLSCREEN_HEIGHT, FULLSCREEN_WIDTH, FRAMES_PER_SECOND);
 
 	//Load All Main Menu Objects
 	menuObjects.push_back(new Object("./Assets/Models/UI_Object", "./Assets/Textures/titleScreen.png", "background", true));
