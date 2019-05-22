@@ -58,7 +58,7 @@ void Scene::init(Character* _players[2], InputHandler* _Controllers)
 	loadParticles();
 
 	//Init Scene & Frame Buffers
-	GBuffer.InitDepthTexture(WINDOW_HEIGHT, WINDOW_WIDTH);
+	GBuffer.InitDepthTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
 	GBuffer.InitColorTexture(0, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGBA8, GL_NEAREST, GL_CLAMP_TO_EDGE); //Flat color
 	GBuffer.InitColorTexture(1, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB16, GL_NEAREST, GL_CLAMP_TO_EDGE); //Normals (xyz)
 	GBuffer.InitColorTexture(2, WINDOW_WIDTH, WINDOW_HEIGHT, GL_RGB32F, GL_NEAREST, GL_CLAMP_TO_EDGE); //View Space Positions (xyz)
@@ -110,6 +110,9 @@ bool Scene::update()
 {
 	// Update Sound
 	Sound::engine.update();
+
+	// Update Inputs
+	Controllers->update();
 
 	// Update Clock
 	updateTimer->tick();
@@ -388,9 +391,10 @@ bool Scene::update()
 		}
 
 		if (tempTime >= 1.5f){
-			close();
+			//close();
 		}
 	}
+	return true;
 }
 
 void Scene::draw()
@@ -408,8 +412,6 @@ void Scene::draw()
 	HudMap.Clear();
 	WorkBuffer1.Clear();
 	WorkBuffer2.Clear();
-	//godRaysBuffer1.Clear();
-	//godRaysBuffer2.Clear();
 
 	/// Generate The Shadow Map ///
 	glViewport(0, 0, SHADOW_RESOLUTION, SHADOW_RESOLUTION);

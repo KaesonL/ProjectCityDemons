@@ -28,5 +28,26 @@
 
 class Overlay {
 
+public:
+	Overlay() {
+
+	}
+	~Overlay() {
+
+	}
+
+	bool update() {
+
+	}
+	void draw() {
+
+	}
+
+private:
+	// Entities
+	std::vector<Object*> Objects;
+
+	// HUD Shaders
+	ShaderProgram HPShader;
 
 };
