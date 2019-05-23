@@ -19,6 +19,7 @@ void Scene::init(Character* _players[2], InputHandler* _Controllers)
 	Players[0] = _players[0];
 	Players[1] = _players[1];
 	Controllers = _Controllers;
+	HUD = new Overlay();
 
 	//load objects for scene
 	Objects.push_back(new Object("./Assets/Models/basicCourtHigh", "./Assets/Textures/basicCourt.png", "stage1_env"));
@@ -676,11 +677,11 @@ void Scene::draw()
 
 	ParticleProgram->UnBind();
 
+	HUD->draw(Players, TotalGameTime);
 
 	DeferredComposite.UnBind();
 	DeferredLighting->UnBind();
-
-	//drawHUD();
+	
 
 	/// Compute High Pass ///
 

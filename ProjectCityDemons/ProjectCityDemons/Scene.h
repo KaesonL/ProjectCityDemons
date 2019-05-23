@@ -18,6 +18,7 @@
 #include "InputHandler.h"
 #pragma comment(lib, "Xinput9_1_0.lib") 
 #include "Timer.h"
+#include "Overlay.h"
 
 //debugging
 #include <chrono>
@@ -61,6 +62,7 @@ private:
 	std::vector<Object*> Objects;
 	std::vector<PointLightObj*> pointLights;
 	Character* Players[2];
+	Overlay* HUD;
 
 	// Collision Positions
 	float rightWall;

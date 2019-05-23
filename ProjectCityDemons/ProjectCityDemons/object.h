@@ -31,6 +31,7 @@ public:
 	void setScale(glm::vec3 scale);
 	void setScale(float scale);
 	void RotateY(float rot);
+	void RotateX(float rot);
 
 
 	std::string name;

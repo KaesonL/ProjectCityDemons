@@ -64,6 +64,7 @@ void Object::update(int t, std::vector<bool> inputs) {
 		position = position + (velocity);
 
 		transform.RotateY(rotY);
+		transform.RotateX(rotX);
 
 		transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
 		transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
@@ -118,6 +119,7 @@ void Object::setPosition(glm::vec3 pos) {
 	transform = Transform::Identity();
 	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
 	transform.RotateY(rotY);
+	transform.RotateX(rotX);
 	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 }
 //Sets player scale
@@ -129,6 +131,7 @@ void Object::setScale(glm::vec3 scale) {
 	transform = Transform::Identity();
 	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
 	transform.RotateY(rotY);
+	transform.RotateX(rotX);
 	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 }
 //Sets player scale
@@ -140,6 +143,7 @@ void Object::setScale(float scale) {
 	transform = Transform::Identity();
 	transform.Scale(glm::vec3(scale));
 	transform.RotateY(rotY);
+	transform.RotateX(rotX);
 	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 }
 
@@ -150,6 +154,18 @@ void Object::RotateY(float rot) {
 	transform = Transform::Identity();
 	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
 	transform.RotateY(rotY);
+	transform.RotateX(rotX);
+	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
+}
+
+//Sets player scale
+void Object::RotateX(float rot) {
+	rotX = rot;
+
+	transform = Transform::Identity();
+	transform.Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	transform.RotateY(rotY);
+	transform.RotateX(rotX);
 	transform.SetTranslation(glm::vec3(position.x, position.y, position.z));
 }
 
