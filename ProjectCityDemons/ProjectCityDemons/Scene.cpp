@@ -188,21 +188,21 @@ bool Scene::update()
 					Controllers->SetVibration(defender, 0, 0);
 					/// if Blocking & in an action where they can block
 					if ((((Controllers->getButton(1, MyInputs::Left) && !Players[attacker]->getHitboxes()[i]->facingRight) || (Controllers->getButton(1, MyInputs::Right) && Players[attacker]->getHitboxes()[i]->facingRight)))
-						&& (Players[defender]->action == Players[defender]->ACTION_FALL || Players[defender]->action == Players[defender]->ACTION_JUMP || Players[defender]->action == Players[defender]->ACTION_JUMP2 ||
-							Players[defender]->action == Players[defender]->ACTION_PREJUMP || Players[defender]->action == Players[defender]->ACTION_WALK || Players[defender]->action == Players[defender]->ACTION_RUN)) {
+						&& (Players[defender]->action == Players[defender]->ACTION_FALL || Players[defender]->action == Players[defender]->ACTION_JUMP || Players[defender]->action == Players[defender]->ACTION_JUMPF ||
+							Players[defender]->action == Players[defender]->ACTION_JUMPB || Players[defender]->action == Players[defender]->ACTION_WALKB)) {
 						///if holding back, and in a action wheret they can block
 						///block
 					}
 					///if not Blocking (hit)
 					else {
-						if (Players[defender]->action != Players[defender]->ACTION_HIT) {///if defender not in hitstun, reset combo counter
+						if (Players[defender]->action != Players[defender]->ACTION_G_HIT && Players[defender]->action != Players[defender]->ACTION_A_HIT) {///if defender not in hitstun, reset combo counter
 							Players[attacker]->comboClear();
 							Players[attacker]->resetTimer();
 						}
 						else {
 							Players[attacker]->comboAdd();
 						}
-						Players[defender]->hit(Players[attacker]->getHitboxes()[i]);
+						Players[defender]->onHit(Players[attacker]->getHitboxes()[i]);
 					}
 					///stall
 					Players[attacker]->setVelocity(glm::vec3(Players[attacker]->getVelocity().x, 0.08f, 0.0f));

@@ -12,11 +12,12 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 	for (int i = 0; i < 40; i++) {
 		aniSpeeds[i] = 7.0f;
 	}
-	aniSpeeds[ACTION_HIT] = 14.0f;
-	aniSpeeds[ACTION_HIT_G] = 10.0f;
+	aniSpeeds[ACTION_A_HIT] = 14.0f;
+	aniSpeeds[ACTION_G_HIT] = 10.0f;
 	aniSpeeds[ACTION_FALL] = 40.0f;
 	aniSpeeds[ACTION_JUMP] = 4.0f;
-	aniSpeeds[ACTION_JUMP2] = 4.0f;
+	aniSpeeds[ACTION_JUMPB] = 4.0f;
+	aniSpeeds[ACTION_JUMPF] = 4.0f;
 	aniSpeeds[ACTION_G_METEOR] = 3.0f;//smaller = faster
 	aniSpeeds[ACTION_A_METEOR_ALT_2] = 4.0f;
 	aniSpeeds[ACTION_G_METEOR_ALT_2] = 5.0f;//smaller = faster
@@ -72,7 +73,10 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		frame.push_back("./Assets/Models/Blue/_Walk/pose" + std::to_string((int)((c + 1) % length)));
 		Mesh* walk = new Mesh();
 		walk->LoadFromFile(frame);
-		aniFrames[ACTION_WALK].push_back(walk);
+		aniFrames[ACTION_WALKF].push_back(walk);
+		Mesh* walk2 = new Mesh();
+		walk2->LoadFromFile(frame);
+		aniFrames[ACTION_WALKB].push_back(walk2);
 	}
 	///pre jump
 	length = 2;
@@ -112,7 +116,10 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		aniFrames[ACTION_JUMP].push_back(jab);
 		Mesh* jab2 = new Mesh();
 		jab2->LoadFromFile(frame);
-		aniFrames[ACTION_JUMP2].push_back(jab2);
+		aniFrames[ACTION_JUMPF].push_back(jab2);
+		Mesh* jab3 = new Mesh();
+		jab3->LoadFromFile(frame);
+		aniFrames[ACTION_JUMPB].push_back(jab3);
 	}
 	///hurt
 	length = 3;
@@ -124,7 +131,7 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		frame.push_back("./Assets/Models/Blue/_aHurt/pose" + std::to_string((int)((c + 1) % length)));
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
-		aniFrames[ACTION_HIT].push_back(jab);
+		aniFrames[ACTION_A_HIT].push_back(jab);
 	}
 	///hurt ground
 	length = 4;
@@ -136,7 +143,7 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		frame.push_back("./Assets/Models/Blue/_Hurt/pose" + std::to_string((int)((c + 1) % length)));
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
-		aniFrames[ACTION_HIT_G].push_back(jab);
+		aniFrames[ACTION_G_HIT].push_back(jab);
 	}
 	///initial dash
 	length = 1;
@@ -148,20 +155,16 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string((int)((c + 1) % length)));
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
-		aniFrames[ACTION_INTIAL_DASH].push_back(jab);
-	}
-	///dash
-	length = 1;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c)
-{
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string(c));
-		frame.push_back("./Assets/Models/Blue/_Dash/pose" + std::to_string((int)((c + 1) % length)));
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_DASH].push_back(jab);
+		aniFrames[ACTION_G_DASHF].push_back(jab);
+		Mesh* jab2 = new Mesh();
+		jab2->LoadFromFile(frame);
+		aniFrames[ACTION_G_DASHB].push_back(jab2);
+		Mesh* jab3 = new Mesh();
+		jab3->LoadFromFile(frame);
+		aniFrames[ACTION_A_DASHF].push_back(jab3);
+		Mesh* jab4 = new Mesh();
+		jab4->LoadFromFile(frame);
+		aniFrames[ACTION_A_DASHB].push_back(jab4);
 	}
 	///run
 	length = 1;
@@ -173,7 +176,7 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		frame.push_back("./Assets/Models/Blue/_Run/pose" + std::to_string((int)((c + 1) % length)));
 		Mesh* jab = new Mesh();
 		jab->LoadFromFile(frame);
-		aniFrames[ACTION_RUN].push_back(jab);
+		aniFrames[ACTION_WALKB].push_back(jab);
 	}
 
 	//==================================================================//
@@ -370,7 +373,6 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 
 	//Set Physics
 	position = glm::vec3(0, 0, 0);
-	lastPos = glm::vec3(0, 0, 0);
 	velocity = glm::vec3(0, 0, 0);
 	acceleration = glm::vec3(0, 0, 0);
 	force = glm::vec3(0, 0, 0);
@@ -394,15 +396,16 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 	///Multiplier for directional influence while character is in hitstun
 	diMultiplier = 0.1f;
 	///Multiplier applied to max speed used to decide speed of dash
-	dashMultiplier = 1.5f;
+	dashSpeed = 1.5f;
 	///max run speed
-	runSpeed = 0.3f;
+	maxSpeed = 0.3f;
 	///force applied for running
-	runAccel = 0.75f;//0.52f;
+	walkSpeed = 0.75f;//0.52f;
 	///force appplied for directional movement in air
 	airAccel = 0.2f;
 	///upwards force for jump
 	jumpForce = 0.42f;//0.44f;
+	jumpForceX = 1.1f;//0.44f;
 	///amount of frames jump last for
 	jumpFrames = 4;//12;
 	///run InitialDash length (in frames)
@@ -448,7 +451,7 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 
 	//Set Starting Action
 	action = ACTION_FALL;
-	idle();
+	Idle();
 }
 
 //=============================================================//
@@ -473,7 +476,7 @@ Transform charBlueDragon::gBasic()
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		cancel = false;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -520,7 +523,7 @@ Transform charBlueDragon::gBasic2()
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		cancel = false;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -566,7 +569,7 @@ Transform charBlueDragon::gBasic3()
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		cancel = false;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -607,7 +610,7 @@ Transform charBlueDragon::gMeteor()
 	if (action != ACTION_G_METEOR || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -662,7 +665,7 @@ Transform charBlueDragon::gClear()
 	if (action != ACTION_G_CLEAR || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -707,7 +710,7 @@ Transform charBlueDragon::gBasicAlt()
 	if (action != ACTION_G_BASIC_ALT || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -750,7 +753,7 @@ Transform charBlueDragon::gMeteorAlt()
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		cancel = false;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -783,7 +786,7 @@ Transform charBlueDragon::gMeteorAlt2()
 	if (action != ACTION_G_METEOR_ALT_2 || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -838,7 +841,7 @@ Transform charBlueDragon::gClearAlt()
 	if (action != ACTION_G_CLEAR_ALT || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -903,7 +906,7 @@ Transform charBlueDragon::aBasic()
 	if (action != ACTION_A_BASIC || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -944,7 +947,7 @@ Transform charBlueDragon::aMeteor()
 	if (action != ACTION_A_METEOR || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -985,7 +988,7 @@ Transform charBlueDragon::aClear()
 	if (action != ACTION_A_CLEAR || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -1030,7 +1033,7 @@ Transform charBlueDragon::aBasicAlt()
 	if (action != ACTION_A_BASIC_ALT || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -1070,7 +1073,7 @@ Transform charBlueDragon::aMeteorAlt()
 	if (action != ACTION_A_METEOR_ALT || currentFrame >= activeFrames || position.y == floor) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return idle();
+		return Idle();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -1116,7 +1119,7 @@ Transform charBlueDragon::aMeteorAlt2()
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
 		cancel = false;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {
@@ -1156,7 +1159,7 @@ Transform charBlueDragon::aClearAlt()
 	if (action != ACTION_A_CLEAR_ALT || currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return fall();
+		return Fall();
 	}
 	//Actions Per Frame
 	switch (currentFrame) {

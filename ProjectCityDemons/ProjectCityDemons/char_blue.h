@@ -46,7 +46,6 @@ public:
 		//Set Physics
 		position = glm::vec3(0, 0, 0);
 		velocity = glm::vec3(0, 0, 0);
-		lastPos = glm::vec3(0, 0, 0);
 		acceleration = glm::vec3(0, 0, 0);
 		force = glm::vec3(0, 0, 0);
 		facingRight = true;
@@ -62,9 +61,9 @@ public:
 		mass = copy->mass;
 		gravity = copy->gravity;
 		diMultiplier = copy->diMultiplier;
-		dashMultiplier = copy->dashMultiplier;
-		runSpeed = copy->runSpeed;
-		runAccel = copy->runAccel;
+		dashSpeed = copy->dashSpeed;
+		maxSpeed = copy->maxSpeed;
+		walkSpeed = copy->walkSpeed;
 		airAccel = copy->airAccel;
 		jumpForce = copy->jumpForce;
 		jumpFrames = copy->jumpFrames;
@@ -82,7 +81,7 @@ public:
 
 		//Set Starting Action
 		action = ACTION_FALL;//0 idle, 1 jumping
-		idle();
+		Idle();
 
 
 		currentHealth = copy->currentHealth;
@@ -124,7 +123,7 @@ public:
 			gMeteorAlt2();
 		}
 		else
-			Character::hit(hitBy);
+			Character::onHit(hitBy);
 	}
 
 	void update(int t, InputHandler* inputs, unsigned int playerNum) {
@@ -143,7 +142,7 @@ public:
 				interuptable = true;
 				action = ACTION_PLACEHOLDER;
 				cancel = false;
-				return dash(inputs->getButtonDown(playerNum, MyInputs::Left), inputs->getButtonDown(playerNum, MyInputs::Right));
+				return gDashB();
 		}
 		else if (action == ACTION_G_METEOR_ALT_2){// || (action == ACTION_G_METEOR_ALT && inputs->getButtonDown(playerNum, MyInputs::Meteor) && cancel == true)) {
 			////debug press again to activate counter
@@ -169,7 +168,7 @@ public:
 			return gBasic2();
 		}
 		else
-			return Character::atkInputHandler(inputs, playerNum);
+			return Character::actionHandler(inputs, playerNum);
 	}
 
 	Transform gBasic();
@@ -194,10 +193,10 @@ public:
 	Transform gMeteorAlt2();
 	Transform aMeteorAlt2();
 
-	unsigned int ACTION_G_BASIC_2 = 30;
-	unsigned int ACTION_G_BASIC_3 = 31;
-	unsigned int ACTION_G_METEOR_ALT_2 = 32;
-	unsigned int ACTION_A_METEOR_ALT_2 = 33;
+	unsigned int ACTION_G_BASIC_2 = 35;
+	unsigned int ACTION_G_BASIC_3 = 36;
+	unsigned int ACTION_G_METEOR_ALT_2 = 37;
+	unsigned int ACTION_A_METEOR_ALT_2 = 38;
 	bool cancel = false;
 
 protected:

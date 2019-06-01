@@ -26,17 +26,6 @@ Character::Character(const std::string& textureName){
 
 void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 
-	//Change Player Facing only during these actinos.
-	if (action <= 7 && action != ACTION_INTIAL_DASH) {
-		///check the way it should face
-		if (inputs->getButtonDown(playerNum, MyInputs::Right)) {
-			facingRight = true;
-		}
-		else if (inputs->getButtonDown(playerNum, MyInputs::Left)) {
-			facingRight = false;
-		}
-	}
-
 	//max health
 	if (currentHealth > maxHealth) {
 		currentHealth = maxHealth;
@@ -73,8 +62,8 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 
 	//actual update
 	force.x = 0;
-	transform = atkInputHandler(inputs, playerNum);
-	if (action != ACTION_DASH && action != ACTION_RESPAWN) {
+	transform = actionHandler(inputs, playerNum);
+	if (action != ACTION_A_DASHB && action != ACTION_A_DASHB) {
 
 		//physics update
 		force = glm::vec3(force.x, 0 - gravity, 0);
@@ -82,13 +71,13 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 		velocity = velocity + (acceleration);
 
 		//max speed
-		if (velocity.x > runSpeed)
-			velocity.x = runSpeed;
-		if (velocity.x < (0 - runSpeed))
-			velocity.x = (0 - runSpeed);
+		if (velocity.x > maxSpeed)
+			velocity.x = maxSpeed;
+		if (velocity.x < (0 - maxSpeed))
+			velocity.x = (0 - maxSpeed);
 
 		//friction
-		if (position.y <= 0.0f && ((!inputs->getButton(playerNum, MyInputs::Right) && !inputs->getButton(playerNum, MyInputs::Left)) || (action != ACTION_DASH && action != ACTION_WALK && action != ACTION_RUN && action != ACTION_INTIAL_DASH && action != ACTION_PREJUMP && action != ACTION_JUMP))) {
+		if (position.y <= 0.0f && ((!inputs->getButton(playerNum, MyInputs::Right) && !inputs->getButton(playerNum, MyInputs::Left)) || ((action != ACTION_A_DASHB && action != ACTION_A_DASHB) && action != ACTION_WALKF && action != ACTION_WALKB && action != ACTION_PREJUMP && action != ACTION_JUMP))) {
 			if (action != ACTION_G_BASIC_ALT)
 				velocity.x = velocity.x * 0.7f;
 			else
@@ -106,26 +95,6 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 	//Update Position
 	position = position + (velocity);
 
-	//update movement dir
-
-	//convert into 2d space
-	pos2d = glm::vec2(position.x, position.y);
-	//calculate direction of movement
-	movementDir = (pos2d - lastPos);
-	//Thresholds for non-movement
-	if (movementDir.x < 0.3f && movementDir.x > -0.3f) {
-		movementDir.x = 0.0f;
-	}
-	if(movementDir.y < 0.3f && movementDir.y > -0.3f)
-	{
-		movementDir.y = 0.0f;
-	}
-
-	//normalize
-	glm::normalize(movementDir);
-	//update lastpos
-	lastPos = pos2d;
-
 	///Rotate the player to the correct way they should look
 	if (facingRight == true)
 		//glm::rotate(transform, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -139,7 +108,7 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 	if (position.x > rightWall) {
 		//called on bounce
 		position.x = rightWall;
-		if (action == ACTION_HIT) {
+		if (action == ACTION_A_HIT) {
 			velocity.y *= 0.75f;
 			velocity.x *= -0.75f;
 			hitForce.x *= -0.9f;
@@ -151,7 +120,7 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 	else if (position.x < leftWall) {
 		//called on bounce
 		position.x = leftWall;
-		if (action == ACTION_HIT) {
+		if (action == ACTION_A_HIT) {
 			velocity.y *= 0.75f;
 			velocity.x *= -0.75f;
 			hitForce.x *= -0.9f;
@@ -170,16 +139,16 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 		usedAirDash1 = false;
 		usedAirDash2 = false;
 
-		if (action == ACTION_HIT && currentFrame < activeFrames) { // Bounce
+		if (action == ACTION_A_HIT && currentFrame < activeFrames) { // Bounce
 			velocity.y *= -0.75f;
 			velocity.x *= 0.5f;
 			hitForce.y *= -0.9f;
 		}
-		else if (action == ACTION_HIT) //Glitch Fix
+		else if (action == ACTION_A_HIT) //Glitch Fix
 		{
 			interuptable = true;
 			action = ACTION_PLACEHOLDER;
-			fall();
+			Fall();
 		}
 		// Landing
 		else if ((currentFrame >= activeFrames || interuptable == true) && (action == ACTION_FALL || action == ACTION_A_BASIC_ALT || action == ACTION_A_CLEAR || action == ACTION_A_METEOR || action == ACTION_A_BASIC)) {
@@ -189,7 +158,7 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 			for (int i = 0; i < (int)activeHitboxes.size(); i++) {
 				activeHitboxes[i]->setDone();
 			}
-			idle();
+			Idle();
 			//velocity.x *= 0.7f;
 			partiQueue.push(LANDDUST);						//$$$
 		}
@@ -201,10 +170,10 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 	}
 	else {
 		//called after hitstun is up in the air
-		if (currentFrame >= activeFrames && action == ACTION_HIT) {
+		if (currentFrame >= activeFrames && action == ACTION_A_HIT) {
 			interuptable = true;
 			action = ACTION_PLACEHOLDER;
-			fall();
+			Fall();
 		}
 	}
 	
@@ -330,7 +299,7 @@ std::vector<Hitbox*> Character::getHurtboxes()
 }
 
 //called on hit
-void Character::hit(Hitbox* hitBy) {
+void Character::onHit(Hitbox* hitBy) {
 	float result;
 	if (getPosition().y == floor && hitBy->getKnockback() < 7)
 		result = 0;
@@ -346,9 +315,9 @@ void Character::hit(Hitbox* hitBy) {
 	glm::vec3 add(result * xComp, abs(result) * yComp, 0);
 	hitForce = add;
 	if (result == 0)
-		action = ACTION_HIT_G;
+		action = ACTION_G_HIT;
 	else
-		action = ACTION_HIT;
+		action = ACTION_A_HIT;
 
 	index = 0;
 	aniTimer = 0;
@@ -364,398 +333,411 @@ void Character::hit(Hitbox* hitBy) {
 	}
 }
 
-///0-up, 1-left, 2-down, 3-right, 4-A, 5-B, 6-jump
-///7-hardLeft, 8-hardRight
-///9-shield
-Transform Character::atkInputHandler(InputHandler* inputs, unsigned int playerNum)
+Transform Character::actionHandler(InputHandler* inputs, unsigned int playerNum)
 {
 	Transform result;
-	///die
-	if (action == ACTION_RESPAWN) {
-		if (currentFrame == 1) {//on first frame pause
-			comboTimer = 50;
-			currentHealth = maxHealth;
-			activeTexture = &(bodyTexture);
-			force = glm::vec3(0, 0, 0);
-			acceleration = glm::vec3(0, 0, 0);
-			velocity = glm::vec3(0, 0, 0);
-			//position.x = 0;
-			position.y = 20;
-			currentFrame = 1;
+
+	if (interuptable) {
+		// AIR ATTACKS
+		if (inputs->getButtonDown(playerNum, MyInputs::Basic) && inputs->getButton(playerNum, MyInputs::Shift) && position.y > floor) {
+			result = aBasicAlt();
 		}
-		//If in Hitstun reduce directional influence
-		if (currentFrame != 1 && currentFrame < 50) {
-			force = glm::vec3(0, 0, 0);
-			acceleration = glm::vec3(0, 0, 0);
-			velocity = glm::vec3(0, 0, 0);
-			//position.x = 0;
-			position.y -= 0.2f;
-			if((int)(currentFrame * 0.2f) % 2)
-				activeTexture = &(bodyTexture);
+		else if (inputs->getButtonDown(playerNum, MyInputs::Clear) && inputs->getButton(playerNum, MyInputs::Shift) && position.y > floor) {
+			result = aClearAlt();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Meteor) && inputs->getButton(playerNum, MyInputs::Shift) && position.y > floor) {
+			result = aMeteorAlt();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Meteor) && position.y > floor) {
+			result = aMeteor();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Clear) && position.y > floor) {
+			result = aClear();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Basic) && position.y > floor) {
+			result = aBasic();
+		}
+
+		///jump
+		else if (inputs->getButtonDown(playerNum, MyInputs::Jump) && position.y <= floor) {
+			//result = PreJump();
+			if ((inputs->getButton(playerNum, MyInputs::Right) && facingRight) || (inputs->getButton(playerNum, MyInputs::Left) && !facingRight))
+				result = JumpF();
+			else if ((inputs->getButton(playerNum, MyInputs::Right) && !facingRight) || (inputs->getButton(playerNum, MyInputs::Left) && facingRight))
+				result = JumpB();
 			else
-				activeTexture = &(hurtTexture);
+				result = Jump();
 		}
-		else if (currentFrame >= 50) {
-			force = glm::vec3(0, 0, 0);
-			acceleration = glm::vec3(0, 0, 0);
-			velocity = glm::vec3(0, 0, 0);
-			activeTexture = &(bodyTexture);
-			//respawn();
-			comboTimer = 50;
-			currentHealth = maxHealth;
-			//position = glm::vec3(0, 10, 0);
-			velocity = glm::vec3(0, 0, 0);
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			fall();
+		///air jump
+		else if (inputs->getButtonDown(playerNum, MyInputs::Jump) && position.y > floor) {
+			if ((inputs->getButton(playerNum, MyInputs::Right) && facingRight) || (inputs->getButton(playerNum, MyInputs::Left) && !facingRight))
+				result = JumpF();
+			else if ((inputs->getButton(playerNum, MyInputs::Right) && !facingRight) || (inputs->getButton(playerNum, MyInputs::Left) && facingRight))
+				result = JumpB();
+			else
+				result = Jump();
 		}
 
-		if (facingRight)
-			result.RotateY(-45.0f + currentFrame * 6.0f);
-		else
-			result.RotateY(-45.0f - currentFrame * 6.0f);
-
-		currentFrame++;
-	}
-	///hit
-	else if (action == ACTION_HIT_G) {
-		//If in Hitstun reduce directional influence
-		if (currentFrame >= activeFrames) {//called on last frame
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			idle();
+		// GROUNDED ATTACKS
+		else if (inputs->getButtonDown(playerNum, MyInputs::Basic) && inputs->getButton(playerNum, MyInputs::Shift) && position.y <= floor) {
+			result = gBasicAlt();
 		}
-		else if (currentFrame == 1) {//on first frame pause
-			force = glm::vec3(0, 0, 0);
-			acceleration = glm::vec3(0, 0, 0);
-			velocity = glm::vec3(0, 0, 0);
+		else if (inputs->getButtonDown(playerNum, MyInputs::Clear) && inputs->getButton(playerNum, MyInputs::Shift) && position.y <= floor) {
+			result = gClearAlt();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Meteor) && inputs->getButton(playerNum, MyInputs::Shift) && position.y <= floor) {
+			result = gMeteorAlt();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Meteor) && position.y <= floor) {
+			result = gMeteor();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Clear) && position.y <= floor) {
+			result = gClear();
+		}
+		else if (inputs->getButtonDown(playerNum, MyInputs::Basic) && position.y <= floor) {
+			result = gBasic();
+		}
+
+
+		// DASH
+		else if (inputs->getButtonDown(playerNum, MyInputs::Dash) && position.y <= floor) {
+			if ((inputs->getButton(playerNum, MyInputs::Right) && !facingRight) || (inputs->getButton(playerNum, MyInputs::Left) && facingRight))
+				result = gDashB();
+			else
+				result = gDashF();
+		}
+		//air dash
+		else if (inputs->getButtonDown(playerNum, MyInputs::Dash) && position.y > floor) {
+			if ((inputs->getButton(playerNum, MyInputs::Right) && !facingRight) || (inputs->getButton(playerNum, MyInputs::Left) && facingRight))
+				result = aDashB();
+			else
+				result = aDashF();
+		}
+
+		//walk right
+		else if (inputs->getButton(playerNum, MyInputs::Right) && position.y <= floor) {
 			if (facingRight)
-				partiQueue.push(HITSPARKL);				//$$$
+				result = WalkF(inputs->getButton(playerNum, MyInputs::Right));
 			else
-				partiQueue.push(HITSPARKR);				//$$$
+				result = WalkB(inputs->getButton(playerNum, MyInputs::Right));
 		}
-
-		currentFrame++;
-	}
-	///hit
-	else if (action == ACTION_HIT) {
-		//If in Hitstun reduce directional influence
-		if (currentFrame != 1) {
-			force.x = (inputs->getButton(playerNum, MyInputs::Right) - inputs->getButton(playerNum, MyInputs::Left)) *  diMultiplier;
-			if (currentFrame < (unsigned int)hitframes) {//only launched for hitframes, character will just be stunned for the remaining frames (hitstun + moves kb)
-				velocity = hitForce = hitForce * 0.99f;			
-				partiQueue.push(LAUNCHDUST);				//$$$
-			}
+		//walk back
+		else if (inputs->getButton(playerNum, MyInputs::Left) && position.y <= floor) {
+			if (facingRight)
+				result = WalkB(inputs->getButton(playerNum, MyInputs::Left));
 			else
-				result.RotateZ((float)(currentFrame - hitframes)*(-0.5f + (int)facingRight));
-		}
-		else {//on first frame pause
-			force = glm::vec3(0, 0, 0);
-			acceleration = glm::vec3(0, 0, 0);
-			velocity = glm::vec3(0, 0, 0);
-			if (facingRight) 
-				partiQueue.push(HITSPARKL);				//$$$
-			else
-				partiQueue.push(HITSPARKR);				//$$$
+				result = WalkF(inputs->getButton(playerNum, MyInputs::Left));
 		}
 
-		currentFrame++;
-	}
-	// AIR ATTACKS
-	else if (((inputs->getButtonDown(playerNum, MyInputs::Basic) && inputs->getButton(playerNum, MyInputs::Shift)) && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_A_BASIC_ALT) {//left or right & A in air = fair
-	result = aBasicAlt();
-	}
-	else if (((inputs->getButtonDown(playerNum, MyInputs::Clear) && inputs->getButton(playerNum, MyInputs::Shift)) && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_A_CLEAR_ALT) {//left or right & A in air = fair
-	result = aClearAlt();
-	}
-	else if (((inputs->getButtonDown(playerNum, MyInputs::Meteor) && inputs->getButton(playerNum, MyInputs::Shift)) && (action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_A_METEOR_ALT) {//left or right & A in air = fair
-	result = aMeteorAlt();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Meteor) && (action == ACTION_FALL || (action == ACTION_DASH && position.y > floor))) || action == ACTION_A_METEOR) {//down & A and in air = Dair
-		result = aMeteor();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Clear) && (action == ACTION_FALL || (action == ACTION_DASH && position.y > floor))) || action == ACTION_A_CLEAR) {//up & A and in air = Uair
-		result = aClear();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Basic) && (action == ACTION_FALL || (action == ACTION_DASH && position.y > floor))) || action == ACTION_A_BASIC) {//just A in air = nair
-		result = aBasic();
-	}
-
-	///prejump
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Jump) && (action == ACTION_IDLE || action == ACTION_RUN || action == ACTION_WALK || action == ACTION_INTIAL_DASH || (action == ACTION_DASH && position.y <= floor))) || action == ACTION_PREJUMP) {
-		result = prejump();
-		if (inputs->getButtonDown(playerNum, MyInputs::Left))
-			jumpForceX = -0.5f * jumpForce;
-		else if (inputs->getButtonDown(playerNum, MyInputs::Right))
-			jumpForceX = 0.5f * jumpForce;
-		else jumpForceX = 0;
-
-	}
-
-	// GROUNDED ATTACKS
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Meteor) && inputs->getButton(playerNum, MyInputs::Shift) && !(action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_G_METEOR_ALT) {//left or right + B = side Special
-		result = gMeteorAlt();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Clear) && inputs->getButton(playerNum, MyInputs::Shift) && !(action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_G_CLEAR_ALT) {//down + B = down Special
-		result = gClearAlt();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Basic) && inputs->getButton(playerNum, MyInputs::Shift) && !(action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_G_BASIC_ALT) {//left or right & A = Ftilt
-		result = gBasicAlt();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Meteor) && !(action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_G_METEOR) {//down & A = Dtilt
-		result = gMeteor();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Clear) && !(action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_G_CLEAR) {//down & A = Dtilt
-		result = gClear();
-	}
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Basic) && !(action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2 || (action == ACTION_DASH && position.y > floor))) || action == ACTION_G_BASIC) {//just A = jab
-		result = gBasic();
-	}
-
-	///dash
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Dash) && (action == ACTION_IDLE || action == ACTION_WALK || action == ACTION_RUN || action == ACTION_INTIAL_DASH || action == ACTION_FALL || action == ACTION_JUMP || action == ACTION_JUMP2)) || action == ACTION_DASH) {
-
-		result = dash(inputs->getButton(playerNum, MyInputs::Right), inputs->getButton(playerNum, MyInputs::Left));
-	}
-	///jump
-	else if (action == ACTION_JUMP) {
-		result = jump();
-		force.x = (inputs->getButton(playerNum, MyInputs::Right) - inputs->getButton(playerNum, MyInputs::Left))* 0.5f *  airAccel;
-		if (inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right))
-			force.x *= 2.0f;
-	}
-	///jump2
-	else if ((inputs->getButtonDown(playerNum, MyInputs::Jump) && action == ACTION_FALL) || action == ACTION_JUMP2) {
-		result = jump2();
-		force.x = (inputs->getButton(playerNum, MyInputs::Right) - inputs->getButton(playerNum, MyInputs::Left))* 0.5f *  airAccel;
-		if (inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right))
-			force.x *= 2.0f;
-	}
-	///fall
-	else if (action == ACTION_FALL) {
-		result = fall();
-		force.x = (inputs->getButton(playerNum, MyInputs::Right) - inputs->getButton(playerNum, MyInputs::Left))* 0.5f *  airAccel;
-		if (inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right))
-			force.x *= 2.0f;
-	}
-	
-	//NON-OFFENSIVE
-	///intial dash
-	else if ((((inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right) && (action == ACTION_IDLE || (action == ACTION_WALK && currentFrame < activeFrames*0.5f))) || action == ACTION_INTIAL_DASH) && action != ACTION_RUN)) {
-		
-		result = initialDash(inputs->getButton(playerNum, MyInputs::Right), inputs->getButton(playerNum, MyInputs::Left));
-	}
-	///run
-	else if (inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right) && (action == ACTION_WALK || action == ACTION_RUN)) {
-
-		//dashdancing
-		if (facingRight && inputs->getButton(playerNum, MyInputs::Left)) {
-			velocity.x *= -0.75f;
-			facingRight = false;
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			result = initialDash(inputs->getButton(playerNum, MyInputs::Right), inputs->getButton(playerNum, MyInputs::Left));
+		else {
+			//continue current action
+			result = currentAction();
 		}
-		if (!facingRight && inputs->getButton(playerNum, MyInputs::Right)) {
-			velocity.x *= -0.75f;
-			facingRight = true;
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			result = initialDash(inputs->getButton(playerNum, MyInputs::Right), inputs->getButton(playerNum, MyInputs::Left));
-		}
-		else
-			result = run(inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right));
-	}
-	///walk
-	else if ((inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right)) && (action == ACTION_WALK || action == ACTION_IDLE)) {
-		result = walk(inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right));
-	}
-	///idle
-	else if (!(inputs->getButton(playerNum, MyInputs::Left) || inputs->getButton(playerNum, MyInputs::Right)) || action == ACTION_IDLE) {
-		result = idle();
 	}
 	else {
-		result = idle();
+		//continue current action
+		result = currentAction();
 	}
-
 	return result;
-
 }
 
-Transform Character::idle()
+Transform Character::currentAction()
 {
-	Transform result = Transform();
+	if (action == ACTION_IDLE) { return Idle(); }
+	else if (action == ACTION_WALKF) { return WalkF(false); }
+	else if (action == ACTION_WALKB) { return WalkB(false); }
+	else if (action == ACTION_PREJUMP) { return PreJump(); }
+	else if (action == ACTION_JUMP) { return Jump(); }
+	else if (action == ACTION_JUMPF) { return JumpF(); }
+	else if (action == ACTION_JUMPB) { return JumpB(); }
+	else if (action == ACTION_FALL) { return Fall(); }
+	else if (action == ACTION_G_BLOCK) {return gBlock();}
+	else if (action == ACTION_A_BLOCK) {return aBlock();}
+	else if (action == ACTION_G_DASHF) {return gDashF();}
+	else if (action == ACTION_G_DASHB) {return gDashB();}
+	else if (action == ACTION_A_DASHF) {return aDashF();}
+	else if (action == ACTION_A_DASHB) {return aDashB();}
+	else if (action == ACTION_G_HIT) { return gHit(); }
+	else if (action == ACTION_A_HIT) { return aHit(); }
+	//else if (action == ACTION_LAUNCHED_B) { return Launched_Bounce(); }
+	//else if (action == ACTION_LAUNCHED_K) { return Launched_Knockdown(); }
+	//else if (action == ACTION_KNOCKDOWN) { return Knockdown(); }
+	//else if (action == ACTION_GETUP) { return Getup(); }
+	//else if (action == ACTION_BOUNCEG) {return Bounce_Ground();}
+	//else if (action == ACTION_BOUNCEW) {return Bounce_Wall();}
+	else if (action == ACTION_G_BASIC) {return gBasic();}
+	else if (action == ACTION_G_METEOR) { return gMeteor(); }
+	else if (action == ACTION_G_CLEAR) { return gClear(); }
+	else if (action == ACTION_G_BASIC_ALT) { return gBasicAlt(); }
+	else if (action == ACTION_G_METEOR_ALT) { return gMeteorAlt(); }
+	else if (action == ACTION_G_CLEAR_ALT) { return gClearAlt(); }
+	else if (action == ACTION_A_BASIC) { return aBasic(); }
+	else if (action == ACTION_A_METEOR) { return aMeteor(); }
+	else if (action == ACTION_A_CLEAR) { return aClear(); }
+	else if (action == ACTION_A_BASIC_ALT) { return aBasicAlt(); }
+	else if (action == ACTION_A_METEOR_ALT) { return aMeteorAlt(); }
+	else if (action == ACTION_A_CLEAR_ALT) { return aClearAlt(); }
+	else { return Idle(); }
+	return Transform();
+}
+
+Transform Character::Idle()
+{
+	Transform result;
+	//Called First Frame
 	if (interuptable == true && action != ACTION_IDLE) {
+		interuptable = true;
 		action = ACTION_IDLE;
 		activeFrames = 27;
 		currentFrame = 1;
-		interuptable = true;
+		aniTimer = 0;
+		index = 0;
 	}
-	else if (action == ACTION_IDLE && currentFrame <= activeFrames) {
-
-		if (currentFrame >= activeFrames) {
-			//if action over, goto idle
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			return idle();
-		}
-
-		//stuff goes here
-
-		//std::cout << "idle" << std::endl;
-		
-		currentFrame++;
-	}
-	return result;
-}
-
-Transform Character::walk(bool held)
-{
-	Transform result = Transform();
-	if (interuptable == true && action != ACTION_WALK) {
-		action = ACTION_WALK;
-		activeFrames = 42;
-		currentFrame = 1;
-		interuptable = true;
-	}
-	else if (!held) {
+	//Auto Finish
+	if (action == ACTION_IDLE && currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return idle();
+		return Idle();
 	}
-	else if (action == ACTION_WALK && currentFrame <= activeFrames) {
-
-		if (currentFrame >= activeFrames) {
-			//if action over, goto walk
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			return walk(held);
-		}
-
-		//max speed
-		float mag = velocity.x;
-		if (velocity.x > runSpeed*0.3f)
-			velocity.x = runSpeed * 0.3f;
-		if (velocity.x < (0 - (runSpeed * 0.3f)))
-			velocity.x = (0 - (runSpeed * 0.3f));
-
-		//stuff goes here
-		int direction = (int)facingRight;
-		if (facingRight == 0)
-			direction = -1;
-		force.x = direction * runAccel * 0.3f;
-		//std::cout << "walk" << std::endl;
-
-		currentFrame++;
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1: 
+	default:
+		break;
 	}
+	currentFrame++;
 	return result;
 }
 
-Transform Character::run(bool held)
+
+Transform Character::gBlock()
 {
-	Transform result = Transform();
-	if (interuptable == true && action != ACTION_RUN) {
-		action = ACTION_RUN;
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_G_BLOCK) {
+		interuptable = false;
+		action = ACTION_G_BLOCK;
+		activeFrames = 6;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Idle();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	currentFrame++;
+	return result;
+}
+
+
+Transform Character::aBlock()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_A_BLOCK) {
+		interuptable = false;
+		action = ACTION_A_BLOCK;
+		activeFrames = 6;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		if(position.y <= this->floor)return Idle();
+		else return Fall();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	currentFrame++;
+	return result;
+}
+
+Transform Character::WalkF(bool held)//will always be true if called from press, false if called from current action (no press)
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_WALKF) {
+		interuptable = true;
+		action = ACTION_WALKF;
 		activeFrames = 30;
 		currentFrame = 1;
-		interuptable = true;
+		aniTimer = 0;
+		index = 0;
 	}
-	else if (!held) {
+	//Auto Finish
+	if (!held) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		return walk(true);
+		return Idle();
 	}
-	else if (action == ACTION_RUN && currentFrame <= activeFrames) {
-
-		if (currentFrame >= activeFrames) {
-			//if action over, goto walk
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			return run(held);
-		}
-
-		//stuff goes here
-		int direction = (int)facingRight;
-		if (facingRight == 0)
-			direction = -1;
-
-		force.x = direction * runAccel;
-		//std::cout << "run" << std::endl;
-
-		currentFrame++;
-	}
-	return result;
-}
-
-Transform Character::initialDash(bool right, bool left)
-{
-	Transform result = Transform();
-	if (interuptable == true && action != ACTION_INTIAL_DASH) {
-		action = ACTION_INTIAL_DASH;
-		activeFrames = dashLength;
-		currentFrame = 1;
+	//Auto Loop
+	if (held && currentFrame >= activeFrames) {
 		interuptable = true;
-
-		int direction = (int)facingRight;
-		if (facingRight == 0) {
-			direction = -1;
-		}
-
-
-
+		currentFrame = 1;
+		return WalkF(held);
 	}
-	else if (action == ACTION_INTIAL_DASH && currentFrame <= activeFrames) {
-
-		if (currentFrame >= activeFrames) {
-			//if action over, goto run
-			interuptable = true;
-			action = ACTION_PLACEHOLDER;
-			return run(true);
-		}
-		
-
-		//stuff goes here
-		int direction = (int)facingRight;
-		if (facingRight == 0) {
-			direction = -1;
-			partiQueue.push(RDASHDUST);						//$$$
-		}
-		else {
-			partiQueue.push(LDASHDUST);						//$$$
-		}
-		//dashdancing
-		if (direction == 1 && left == true) { 
-			velocity.x *= -0.1f; 
-			direction *= -1;
-			facingRight = false;
-			currentFrame = 1;
-		}
-		if (direction == -1 && right == true) {
-			velocity.x *= -0.1f;
-			direction *= -1;
-			facingRight = true;
-			currentFrame = 1;
-		}
-
-		force.x = direction * runAccel;
-
-		currentFrame++;
-		//std::cout << " dash" << std::endl;
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
 	}
+	//Actions Every Frame
+	int direction = (int)facingRight;
+	if (facingRight == 0) {
+		direction = -1;
+		partiQueue.push(RDASHDUST);
+	}
+	else 
+		partiQueue.push(LDASHDUST);
+	force.x = direction * walkSpeed;
+	currentFrame++;
 	return result;
 }
 
-
-Transform Character::dash(bool right, bool left)
+Transform Character::WalkB(bool held)//will always be true if called from press, false if called from current action (no press)
 {
-	Transform result = Transform();
-	//if (interuptable == true && action != ACTION_DASH) {
-	if (action != ACTION_DASH && ((getPosition().y == floor && dashTimer > 15) || (getPosition().y > floor && !usedAirDash1) || (getPosition().y > floor && !usedAirDash2 && jumpsLeft == 0))) {
-		action = ACTION_DASH;
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_WALKB) {
+		interuptable = true;
+		action = ACTION_WALKB;
+		activeFrames = 30;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (!held) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Idle();
+	}
+	//Auto Loop
+	if (held && currentFrame >= activeFrames) {
+		interuptable = true;
+		currentFrame = 1;
+		return WalkB(held);
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	//Actions Every Frame
+	int direction = (int)(!facingRight);
+	if (facingRight) {
+		direction = -1;
+	}
+	force.x = direction * walkSpeed;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::gDashF()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_G_DASHF) {
+		if (dashTimer < 10) return Idle();//10 frames between dashes
+		interuptable = false;
+		action = ACTION_G_DASHF;
 		activeFrames = 8;
 		currentFrame = 1;
-
+		aniTimer = 0;
+		index = 0;
 		dashTimer = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Idle();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	//Actions Every Frame
+	int direction = (int)facingRight;
+	if (!facingRight)
+		direction = -1;
+	velocity.y = 0.0f;
+	velocity.x = (float)direction * dashSpeed;
+	currentFrame++;
+	return result;
+}
+
+
+Transform Character::gDashB()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_G_DASHB) {
+		if (dashTimer < 10) return Idle();//10 frames between dashes
+		interuptable = false;
+		action = ACTION_G_DASHB;
+		activeFrames = 8;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+		dashTimer = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Idle();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	//Actions Every Frame
+	int direction = (int)(!facingRight);
+	if (facingRight)
+		direction = -1;
+	velocity.y = 0.0f;
+	velocity.x = (float)direction * dashSpeed;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::aDashF()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_A_DASHF) {
+		if (usedAirDash1 && usedAirDash1) return Fall();
+		if (!usedAirDash1) usedAirDash1 = true;
+		else if (!usedAirDash2) usedAirDash2 = true;
+		interuptable = false;
+		action = ACTION_A_DASHF;
+		activeFrames = 8;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
 		if (jumpsLeft == 1) {
 			usedAirDash1 = true;
 		}
@@ -763,46 +745,134 @@ Transform Character::dash(bool right, bool left)
 			usedAirDash2 = true;
 			usedAirDash1 = true;
 		}
-		
-		interuptable = false;
-
-		//decide which way youll dash
-		if (left) {
-			velocity.y = 0.0f;
-			velocity.x = runSpeed * -2.0f;
-			facingRight = false;
-		}
-		else if (right) {
-			velocity.y = 0.0f;
-			velocity.x = runSpeed * 2.0f;
-			facingRight = true;
-		}
 	}
 	//Auto Finish
-	if (action != ACTION_DASH || currentFrame >= activeFrames) {
+	if (currentFrame >= activeFrames) {
 		interuptable = true;
 		action = ACTION_PLACEHOLDER;
-		if (position.y > 0.0f)
-			return fall();
-		else
-			return run(true);//idle()
+		return Fall();
 	}
-	else if (action == ACTION_DASH && currentFrame < activeFrames) {
-
-		//stuff goes here
-		int direction = (int)facingRight;
-		if (facingRight == 0)
-			direction = -1;
-
-		velocity.y = 0.0f;
-		velocity.x = direction * runSpeed * dashMultiplier;
-
-		currentFrame++;
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
 	}
+	//Actions Every Frame
+	int direction = (int)facingRight;
+	if (!facingRight)
+		direction = -1;
+	velocity.y = 0.0f;
+	velocity.x = (float)direction * dashSpeed;
+	currentFrame++;
 	return result;
 }
 
-Transform Character::prejump()
+Transform Character::aDashB()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_A_DASHB) {
+		if (usedAirDash1 && usedAirDash1) return Fall();
+		if (!usedAirDash1) usedAirDash1 = true;
+		else if (!usedAirDash2) usedAirDash2 = true;
+		interuptable = false;
+		action = ACTION_A_DASHB;
+		activeFrames = 8;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+		if (jumpsLeft == 1) {
+			usedAirDash1 = true;
+		}
+		else if (jumpsLeft == 0) {
+			usedAirDash2 = true;
+			usedAirDash1 = true;
+		}
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Fall();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	//Actions Every Frame
+	int direction = (int)(!facingRight);
+	if (facingRight)
+		direction = -1;
+	velocity.y = 0.0f;
+	velocity.x = (float)direction * dashSpeed;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::gHit()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_G_HIT) {
+		interuptable = false;
+		action = ACTION_G_HIT;
+		activeFrames = hitstun + hitframes;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Idle();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	currentFrame++;
+	return result;
+}
+
+
+Transform Character::aHit()
+{
+	Transform result;
+	//Called First Frame
+	if (interuptable == true && action != ACTION_A_HIT) {
+		interuptable = false;
+		action = ACTION_A_HIT;
+		activeFrames = hitstun + hitframes;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		if (position.y <= this->floor) return Idle();
+		else return Fall();
+	}
+	//Actions Per Frame
+	if (currentFrame < hitframes) {
+		velocity.y = 0.8f;
+	}
+	int direction = (int)!facingRight;
+	if (facingRight)
+		direction = -1;
+	velocity.x = (float)direction * 0.1f;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::PreJump()
 {
 	Transform result = Transform();
 	if (interuptable == true && action != ACTION_PREJUMP) {
@@ -817,7 +887,7 @@ Transform Character::prejump()
 			//if action over, goto jump
 			action = ACTION_PLACEHOLDER;
 			interuptable = true;
-			return jump();
+			return Jump();
 		}
 
 		//stuff goes here
@@ -827,65 +897,100 @@ Transform Character::prejump()
 	return result;
 }
 
-Transform Character::jump()
+Transform Character::Jump()
 {
 	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JUMP) {
+		if (jumpsLeft == 0 && position.x > this->floor) return Fall();//10 frames between dashes
+		if (position.x > this->floor) jumpsLeft--;
 		action = ACTION_JUMP;
 		activeFrames = jumpFrames;
 		currentFrame = 1;
 		interuptable = false;
-		velocity.x *= 0.9f;
 		partiQueue.push(LANDDUST);						//$$$
 	}
 	else if (action == ACTION_JUMP && currentFrame <= activeFrames) {
 
 		if (currentFrame == activeFrames) {
-			jumpForceX = 0;
 			//if action over, goto fall
 			action = ACTION_PLACEHOLDER;
 			interuptable = true;
-			return fall();
+			return Fall();
 		}
 
 		//stuff goes here
 		velocity.y = jumpForce;
-		velocity.x += jumpForceX;
+		velocity.x = 0;
 		currentFrame++;
 	}
 	return result;
 }
 
-Transform Character::jump2()
+Transform Character::JumpF()
 {
 	Transform result = Transform();
-	if (interuptable == true && action != ACTION_JUMP2 && jumpsLeft > 0) {
-		action = ACTION_JUMP2;
+	if (interuptable == true && action != ACTION_JUMPF) {
+		if (jumpsLeft == 0 && position.x > this->floor) return Fall();//10 frames between dashes
+		if (position.x > this->floor) jumpsLeft--;
+		action = ACTION_JUMPF;
 		activeFrames = jumpFrames;
 		currentFrame = 1;
 		interuptable = false;
-		jumpsLeft--;
-		velocity.x *= 0.5f;
 		partiQueue.push(LANDDUST);						//$$$
 	}
-	else if (action == ACTION_JUMP2 && currentFrame <= activeFrames) {
+	else if (action == ACTION_JUMPF && currentFrame <= activeFrames) {
 
 		if (currentFrame == activeFrames) {
 			//if action over, goto fall
 			action = ACTION_PLACEHOLDER;
 			interuptable = true;
-			return fall();
+			return Fall();
 		}
 
+		int direction = (int)facingRight;
+		if (!facingRight)
+			direction = -1;
 		//stuff goes here
 		velocity.y = jumpForce;
-
+		velocity.x = jumpForceX * (float)direction;
 		currentFrame++;
 	}
 	return result;
 }
 
-Transform Character::fall()
+Transform Character::JumpB()
+{
+	Transform result = Transform();
+	if (interuptable == true && action != ACTION_JUMPB) {
+		if (jumpsLeft == 0 && position.x > this->floor) return Fall();//10 frames between dashes
+		if (position.x > this->floor) jumpsLeft--;
+		action = ACTION_JUMPB;
+		activeFrames = jumpFrames;
+		currentFrame = 1;
+		interuptable = false;
+		partiQueue.push(LANDDUST);						//$$$
+	}
+	else if (action == ACTION_JUMPB && currentFrame <= activeFrames) {
+
+		if (currentFrame == activeFrames) {
+			//if action over, goto fall
+			action = ACTION_PLACEHOLDER;
+			interuptable = true;
+			return Fall();
+		}
+
+		int direction = (int)(!facingRight);
+		if (facingRight)
+			direction = -1;
+		//stuff goes here
+		velocity.y = jumpForce;
+		velocity.x = jumpForceX * (float)direction;
+		currentFrame++;
+	}
+	return result;
+}
+
+Transform Character::Fall()
 {
 	Transform result = Transform();
 	if (interuptable == true && action != ACTION_FALL) {
@@ -900,7 +1005,7 @@ Transform Character::fall()
 			//if action over, goto idle
 			action = ACTION_PLACEHOLDER;
 			interuptable = true;
-			return fall();
+			return Fall();
 		}
 
 		//stuff goes here

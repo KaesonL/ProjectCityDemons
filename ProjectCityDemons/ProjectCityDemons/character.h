@@ -79,9 +79,9 @@ public:
 		mass = copy->mass;
 		gravity = copy->gravity;
 		diMultiplier = copy->diMultiplier;
-		dashMultiplier = copy->dashMultiplier;
-		runSpeed = copy->runSpeed;
-		runAccel = copy->runAccel;
+		dashSpeed = copy->dashSpeed;
+		maxSpeed = copy->maxSpeed;
+		walkSpeed = copy->walkSpeed;
 		airAccel = copy->airAccel;
 		jumpForce = copy->jumpForce;
 		jumpFrames = copy->jumpFrames;
@@ -99,7 +99,7 @@ public:
 
 		//Set Starting Action
 		action = ACTION_FALL;//0 idle, 1 jumping
-		idle();
+		Idle();
 
 
 		currentHealth = copy->currentHealth;
@@ -123,7 +123,10 @@ public:
 
 	std::vector<Hitbox*> getHitboxes();
 	std::vector<Hitbox*> getHurtboxes();
-	virtual Transform atkInputHandler(InputHandler* inputs, unsigned int playerNum);
+
+	virtual Transform actionHandler(InputHandler* inputs, unsigned int playerNum);
+
+	virtual Transform currentAction();
 
 	bool facingRight;
 
@@ -134,23 +137,37 @@ public:
 	bool interuptable;
 
 	bool isHit() {
-		return (action == ACTION_HIT);
+		return (action == ACTION_G_HIT || action == ACTION_A_HIT || action == ACTION_LAUNCHED_K || action == ACTION_LAUNCHED_B);
 	}
 
 	//queue for particle signals
 	std::queue<Particall> partiQueue;
 
 	//Actions
-	Transform walk(bool held);
-	Transform run(bool held);
-	Transform dash(bool left, bool right);
-	Transform initialDash(bool left, bool right);
-	Transform prejump();
-	Transform jump();
-	Transform jump2();
-	Transform fall();
-	virtual void hit(Hitbox* hitBy);
-	virtual Transform idle();
+	virtual Transform Idle();
+	virtual Transform WalkF(bool held);
+	virtual Transform WalkB(bool held);
+	virtual Transform PreJump();
+	virtual Transform Jump();
+	virtual Transform JumpF();
+	virtual Transform JumpB();
+	virtual Transform Fall();
+	virtual Transform gBlock();
+	virtual Transform aBlock();
+	virtual Transform gDashF();
+	virtual Transform gDashB();
+	virtual Transform aDashF();
+	virtual Transform aDashB();
+	virtual Transform gHit();
+	virtual Transform aHit();
+	//virtual Transform Launched_Bounce();
+	//virtual Transform Launched_Knockdown();
+	//virtual Transform Knockdown();
+	//virtual Transform Getup();
+	//virtual Transform Bounce_Ground();
+	//virtual Transform Bounce_Wall();
+
+	virtual void onHit(Hitbox* hitBy);
 
 	//3 atks
 	virtual Transform gBasic() { return Transform(); }
@@ -195,25 +212,6 @@ public:
 	}
 	void resetTimer() { comboTimer = 0; }
 
-	void respawn() {
-		comboTimer = 50;
-		//hp
-		currentHealth = 1000;
-		greyHealth = 1000;
-
-		position.y = 20;
-		velocity = glm::vec3(0, 0, 0);
-		interuptable = true;
-		action = ACTION_PLACEHOLDER;
-		//fall();
-
-		action = ACTION_RESPAWN;
-	}
-
-	//int getMeter() {
-	//	return comboMeter;
-	//}
-
 	Transform transform;
 	Mesh body;
 	std::vector<Mesh*> aniFrames[40];//must equal placeholder
@@ -224,10 +222,6 @@ public:
 	unsigned int index;
 
 	bool ultFrame1;
-
-	glm::vec2 pos2d;
-	glm::vec2 lastPos;
-	glm::vec2 movementDir;
 
 	float currentHealth = 1000;//health
 	float maxHealth = 1000;//total health for character
@@ -245,26 +239,26 @@ protected:
 	glm::vec3 velocity;
 	glm::vec3 acceleration;
 	glm::vec3 force;
+	bool usedAirDash1;
+	bool usedAirDash2;
+	int jumpsLeft;
 
 	//Attributes
 	float mass;
 	float gravity;
-	float runSpeed;//max
-	float runAccel;
+	float maxSpeed;//max
+	float walkSpeed;
 	float airAccel;
 	float jumpForce;
 	float jumpForceX;
 	float diMultiplier;
-	float dashMultiplier;
+	float dashSpeed;
 	unsigned int jumpFrames;
 	unsigned int dashLength;
 	unsigned int prejumpLength;
 	unsigned int airJumps;
-	int jumpsLeft;
-	int hitstun;
-	int hitframes;
-	bool usedAirDash1;
-	bool usedAirDash2;
+	unsigned int hitstun;
+	unsigned int hitframes;
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time
@@ -292,41 +286,45 @@ public:
 		//ACTION ID's
 	//===================================================//
 	unsigned int ACTION_IDLE = 0;
-	unsigned int ACTION_WALK = 1;
-	unsigned int ACTION_RUN = 2;
-	unsigned int ACTION_INTIAL_DASH = 3;
-	unsigned int ACTION_PREJUMP = 4;
-	unsigned int ACTION_JUMP = 5;
-	unsigned int ACTION_JUMP2 = 6;
+	unsigned int ACTION_WALKF = 1;
+	unsigned int ACTION_WALKB = 2;
+	unsigned int ACTION_PREJUMP = 3;
+	unsigned int ACTION_JUMP = 4;
+	unsigned int ACTION_JUMPF = 5;
+	unsigned int ACTION_JUMPB = 6;
 	unsigned int ACTION_FALL = 7;
-	unsigned int ACTION_HIT = 8;
-	unsigned int ACTION_HIT_G = 9;
 
-	unsigned int ACTION_G_BASIC = 10;
-	unsigned int ACTION_G_METEOR = 11;
-	unsigned int ACTION_G_CLEAR = 12;
+	unsigned int ACTION_G_BLOCK = 8;
+	unsigned int ACTION_A_BLOCK = 9;
 
-	unsigned int ACTION_G_BASIC_ALT = 13;
-	unsigned int ACTION_G_METEOR_ALT = 14;
-	unsigned int ACTION_G_CLEAR_ALT = 15;
+	unsigned int ACTION_G_DASHF = 10;
+	unsigned int ACTION_G_DASHB = 11;
+	unsigned int ACTION_A_DASHF = 12;
+	unsigned int ACTION_A_DASHB = 13;
 
-	unsigned int ACTION_A_BASIC = 16;
-	unsigned int ACTION_A_METEOR = 17;
-	unsigned int ACTION_A_CLEAR = 18;
+	unsigned int ACTION_G_HIT = 14;
+	unsigned int ACTION_A_HIT = 15;
+	unsigned int ACTION_LAUNCHED_B = 16;
+	unsigned int ACTION_LAUNCHED_K = 17;
+	unsigned int ACTION_KNOCKDOWN = 18;
+	unsigned int ACTION_GETUP = 19;
+	unsigned int ACTION_BOUNCEG = 32;
+	unsigned int ACTION_BOUNCEW = 33;
 
-	unsigned int ACTION_A_BASIC_ALT = 19;
-	unsigned int ACTION_A_METEOR_ALT = 20;
-	unsigned int ACTION_A_CLEAR_ALT = 21;
-
-	unsigned int ACTION_DASH = 22;
-	unsigned int ACTION_BLOCK = 23;
-	unsigned int ACTION_LAUNCHED = 24;
-	unsigned int ACTION_KNOCKDOWN = 25;
-	unsigned int ACTION_GETUP = 26;
-	unsigned int ACTION_GETUP_SIDE = 27;
+	unsigned int ACTION_G_BASIC = 20;
+	unsigned int ACTION_G_METEOR = 21;
+	unsigned int ACTION_G_CLEAR = 22;
+	unsigned int ACTION_G_BASIC_ALT = 23;
+	unsigned int ACTION_G_METEOR_ALT = 24;
+	unsigned int ACTION_G_CLEAR_ALT = 25;
+	unsigned int ACTION_A_BASIC = 26;
+	unsigned int ACTION_A_METEOR = 27;
+	unsigned int ACTION_A_CLEAR = 28;
+	unsigned int ACTION_A_BASIC_ALT = 29;
+	unsigned int ACTION_A_METEOR_ALT = 30;
+	unsigned int ACTION_A_CLEAR_ALT = 31;
 
 	unsigned int ACTION_PLACEHOLDER = 40;
-	unsigned int ACTION_RESPAWN = 41;
 	//===================================================//
 	glm::vec3 hitForce;
 	float aniSpeeds[40];//must equal placeholder
