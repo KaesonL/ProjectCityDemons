@@ -11,7 +11,7 @@ class Hitbox {
 
 public:
 	Hitbox() {}
-	Hitbox(glm::vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, float dmg, glm::vec3 _velocity);
+	Hitbox(glm::vec3 _position, float _size, float _power, float _scaling, float _angle, unsigned int _activeFrames, float dmg, glm::vec3 _velocity);
 	Hitbox(glm::vec3 _position, float _size);
 	~Hitbox();
 
@@ -21,8 +21,8 @@ public:
 	float getSize();
 	void setPosition(glm::vec3 pos);
 	bool isDone();
-	float getAngle();
-	float getKnockback();
+	float getScaling();
+	float getPower();
 	void setDone();
 	Transform getTransform();
 	bool spline;
@@ -53,6 +53,7 @@ public:
 	float getDamage() {
 		return damage;
 	}
+	float angle;
 
 private:
 	//physics
@@ -61,8 +62,8 @@ private:
 	glm::vec3 globalPosition;
 
 	//Hitbox Tings
-	float knockback;
-	float angleDeg;
+	float power;
+	float scaling;
 	float size;
 	float damage;
 	bool hurtbox;

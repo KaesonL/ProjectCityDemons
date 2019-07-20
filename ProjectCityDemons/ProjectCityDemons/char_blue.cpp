@@ -145,6 +145,69 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		jab->LoadFromFile(frame);
 		aniFrames[ACTION_G_HIT].push_back(jab);
 	}
+	///launched
+	length = 1;
+	if (BASE_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c) {
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/Blue/_Launched/pose" + std::to_string(c));
+		frame.push_back("./Assets/Models/Blue/_Launched/pose" + std::to_string((int)((c + 1) % length)));
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_LAUNCHED_K].push_back(jab);
+		Mesh* jab2 = new Mesh();
+		jab2->LoadFromFile(frame);
+		aniFrames[ACTION_LAUNCHED_B].push_back(jab2);
+	}
+	///bounce
+	length = 2;
+	if (BASE_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c) {
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/Blue/_BounceG/pose" + std::to_string(c));
+		frame.push_back("./Assets/Models/Blue/_BounceG/pose" + std::to_string((int)((c + 1) % length)));
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_BOUNCEG].push_back(jab);
+	}
+	///bounce
+	length = 2;
+	if (BASE_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c) {
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/Blue/_BounceW/pose" + std::to_string(c));
+		frame.push_back("./Assets/Models/Blue/_BounceW/pose" + std::to_string((int)((c + 1) % length)));
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_BOUNCEW].push_back(jab);
+	}
+	///knockdown
+	length = 1;
+	if (BASE_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c) {
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/Blue/_Knockdown/pose" + std::to_string(c));
+		frame.push_back("./Assets/Models/Blue/_Knockdown/pose" + std::to_string((int)((c + 1) % length)));
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_KNOCKDOWN].push_back(jab);
+	}
+	///getup
+	length = 2;
+	if (BASE_ANI_TOGGLE == false)
+		length = 1;
+	for (int c = 0; c < length; ++c) {
+		std::vector<std::string> frame;
+		frame.push_back("./Assets/Models/Blue/_Squat/pose" + std::to_string(c));
+		frame.push_back("./Assets/Models/Blue/_Squat/pose" + std::to_string((int)((c + 1) % length)));
+		Mesh* jab = new Mesh();
+		jab->LoadFromFile(frame);
+		aniFrames[ACTION_GETUP].push_back(jab);
+	}
 	///initial dash
 	length = 1;
 	if (BASE_ANI_TOGGLE == false)
@@ -166,19 +229,6 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 		jab4->LoadFromFile(frame);
 		aniFrames[ACTION_A_DASHB].push_back(jab4);
 	}
-	///run
-	length = 1;
-	if (BASE_ANI_TOGGLE == false)
-		length = 1;
-	for (int c = 0; c < length; ++c){
-		std::vector<std::string> frame;
-		frame.push_back("./Assets/Models/Blue/_Run/pose" + std::to_string(c));
-		frame.push_back("./Assets/Models/Blue/_Run/pose" + std::to_string((int)((c + 1) % length)));
-		Mesh* jab = new Mesh();
-		jab->LoadFromFile(frame);
-		aniFrames[ACTION_WALKB].push_back(jab);
-	}
-
 	//==================================================================//
 								//ATTACKS
 	//==================================================================//
@@ -392,32 +442,34 @@ charBlueDragon::charBlueDragon(const std::string& textureName) {
 	///Mass
 	mass = 9;
 	///Gravity Force on Character
-	gravity = 0.24f;
+	gravity = 0.29f;
 	///Multiplier for directional influence while character is in hitstun
 	diMultiplier = 0.1f;
 	///Multiplier applied to max speed used to decide speed of dash
-	dashSpeed = 1.5f;
+	dashSpeed = 0.4f;
 	///max run speed
 	maxSpeed = 0.3f;
 	///force applied for running
-	walkSpeed = 0.75f;//0.52f;
+	walkSpeed = 0.2f;//0.52f;
 	///force appplied for directional movement in air
 	airAccel = 0.2f;
 	///upwards force for jump
-	jumpForce = 0.42f;//0.44f;
-	jumpForceX = 1.1f;//0.44f;
+	jumpForce = 0.4f;//0.44f;
+	jumpForceX = 0.2f;//0.44f;
 	///amount of frames jump last for
-	jumpFrames = 4;//12;
+	jumpFrames = 6;//12;
 	///run InitialDash length (in frames)
-	dashLength = 8;
+	dashLength = 4;
 	///number of frames before character leaves ground after jump input
 	prejumpLength = 3;
 	///total number of air/double jumps
 	airJumps = jumpsLeft = 1;
 	///amount of frames character is stunned after being launched
-	hitstun = 14;//10;
+	hitstun = 10;//10;
 	///amount of frames character is launched for when hit
-	hitframes = 10;
+	hitframes = 14;
+	bounceframes = 10;
+
 	///Health Pool
 	currentHealth = 1000;
 	maxHealth = 1000;
@@ -485,7 +537,8 @@ Transform charBlueDragon::gBasic()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*2.2f, 3.0f, 0.1f),///Position
 			3.0f,						///Size
-			5 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			0,							///Knockback (base kb + combo scale)
+			4,							///Scale
 			85,							///Angle
 			4,							///LifeTime
 			15,							///Damage
@@ -532,7 +585,8 @@ Transform charBlueDragon::gBasic2()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*2.0f, 3.0f, 0.1f),///Position
 			3.0f,						///Size
-			5 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			0,	///Knockback (base kb + combo scale)
+			4,							///Scaling
 			85,							///Angle
 			4,							///LifeTime
 			15,							///Damage
@@ -578,8 +632,9 @@ Transform charBlueDragon::gBasic3()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*1.7f, 3.2f, 0.1f),///Position
 			3.0f,						///Size
-			25 + (2.0f* comboCount),	///Knockback (base kb + combo scale)
-			15,							///Angle
+			15,							///Knockback (base kb + combo scale)
+			1,							///Scaling
+			20,							///Angle
 			5,							///LifeTime
 			20,							///Damage
 			glm::vec3((-0.5f + (int)facingRight)*1.3, 0.2f, 0));		///Velocity
@@ -619,7 +674,8 @@ Transform charBlueDragon::gMeteor()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*5.5f, 2.8f, 0.1f),///Position
 			4.0f,						///Size
-			7 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			7,							///Knockback (base kb + combo scale)
+			1,							///Scaling
 			65,							///Angle
 			6,							///LifeTime
 			15,							///Damage
@@ -633,8 +689,9 @@ Transform charBlueDragon::gMeteor()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*7.4f, 5.8f, 0.1f),///Position
 			4.0f,						///Size
-			15 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
-			280,							///Angle
+			20,							///Knockback (base kb + combo scale)
+			0,							///Scaling
+			-85,							///Angle
 			4,							///LifeTime
 			15,							///Damage
 			glm::vec3(0, -1.2f, 0));		///Velocity
@@ -674,8 +731,9 @@ Transform charBlueDragon::gClear()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*1.7f, 3.2f, 0.1f),///Position
 			3.0f,						///Size
-			25 + (float)(comboCount),	///Knockback (base kb + combo scale)
-			15,							///Angle
+			11,							///Knockback (base kb + combo scale)
+			1,							///Scaling
+			45,							///Angle
 			5,							///LifeTime
 			40,							///Damage
 			glm::vec3((-0.5f + (int)facingRight)*1.3, 0.2f, 0));		///Velocity
@@ -719,7 +777,8 @@ Transform charBlueDragon::gBasicAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*0.2f, 0.7f, 0.1f),///Position
 			2.7f,						///Size
-			6 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			6,							///Knockback (base kb + combo scale)
+			1,							///Scaling
 			85,							///Angle
 			5,							///LifeTime
 			25,							///Damage
@@ -795,8 +854,9 @@ Transform charBlueDragon::gMeteorAlt2()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*2.0f, 1.0f, 0.1f),///Position
 			3.2f,						///Size
-			9,	///Knockback (base kb + combo scale)
-			280,							///Angle
+			20,							///Knockback (base kb + combo scale)
+			0,							///Scaling
+			-85,							///Angle
 			3,							///LifeTime
 			15,							///Damage
 			glm::vec3((-0.5f + (int)facingRight), 0.2f, 0));		///Velocity
@@ -809,7 +869,8 @@ Transform charBlueDragon::gMeteorAlt2()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*3.5f, 3.5f, 0.1f),///Position
 			4.0f,						///Size
-			25 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			30,							///Knockback (base kb + combo scale)
+			1,							///Scaling
 			45,							///Angle
 			4,							///LifeTime
 			20,							///Damage
@@ -852,7 +913,8 @@ Transform charBlueDragon::gClearAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*1.5f, 2.5f, 0.1f),///Position
 			3.5f,						///Size
-			6 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			6,							///Knockback (base kb + combo scale)
+			0,							///Scaling
 			85,							///Angle
 			2,							///LifeTime
 			20,							///Damage
@@ -868,7 +930,8 @@ Transform charBlueDragon::gClearAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*1.5f, 2.5f, 0.1f),///Position
 			4.0f,						///Size
-			20 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			10,							///Power
+			0,							///Scaling
 			75,							///Angle
 			3,							///LifeTime
 			40,							///Damage
@@ -915,8 +978,9 @@ Transform charBlueDragon::aBasic()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight) * 3.9, 1.9f, 0.1f),///Position
 			3.9f,						///Size
-			5 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
-			70,							///Angle
+			1,							///Power
+			5,							///Scaling
+			75,							///Angle
 			15,							///LifeTime
 			20,							///Damage
 			glm::vec3(0, 0, 0));		///Velocity
@@ -956,8 +1020,9 @@ Transform charBlueDragon::aMeteor()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight) * 3, 1.7f, 0.1f),///Position
 			4.0f,						///Size
-			8 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
-			270,							///Angle
+			11,							///Power
+			1,							///Scaling
+			-90.0f,							///Angle
 			4,							///LifeTime
 			25,							///Damage
 			glm::vec3(0, 0, 0));		///Velocity
@@ -997,8 +1062,9 @@ Transform charBlueDragon::aClear()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight) * 3.5, 2.4f, 0.1f),///Position
 			3.9f,						///Size
-			18 + (float)(comboCount),	///Knockback (base kb + combo scale)
-			10,							///Angle
+			11,							///Power
+			1,							///Scaling
+			20,							///Angle
 			6,							///LifeTime
 			30,							///Damage
 			glm::vec3(0, 0, 0));		///Velocity
@@ -1042,8 +1108,9 @@ Transform charBlueDragon::aBasicAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3(0.05f, 1.0f, 0.1f),///Position
 			2.7f,						///Size
-			12 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
-			85,							///Angle
+			12,							///Power
+			0.5,							///Scaling
+			60,							///Angle
 			15,							///LifeTime
 			0,							///Damage
 			glm::vec3(0, 0, 0));		///Velocity
@@ -1082,8 +1149,9 @@ Transform charBlueDragon::aMeteorAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight) * 2.5f, 1.7f, 0.1f),///Position
 			3.5f,						///Size
-			18 + (float)(comboCount),	///Knockback (base kb + combo scale) DOUBLE SCALING
-			270,							///Angle
+			11,							///Power
+			1,							///Scaling
+			-80.0f,							///Angle
 			20,							///LifeTime
 			30,							///Damage
 			glm::vec3(0, 0, 0));		///Velocity
@@ -1170,8 +1238,9 @@ Transform charBlueDragon::aClearAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*1.5f, 2.5f, 0.1f),///Position
 			3.5f,						///Size
-			6 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
-			85,							///Angle
+			5,							///Power
+			0,							///Scaling
+			75,							///Angle
 			2,							///LifeTime
 			20,							///Damage
 			glm::vec3(0, 0, 0));		///Velocity
@@ -1186,7 +1255,8 @@ Transform charBlueDragon::aClearAlt()
 		Hitbox *newAtk = new Hitbox(
 			glm::vec3((-0.5f + (int)facingRight)*1.5f, 2.5f, 0.1f),///Position
 			4.0f,						///Size
-			20 + (0.5f * comboCount),	///Knockback (base kb + combo scale)
+			10,							///Power
+			0,							///Scaling
 			75,							///Angle
 			3,							///LifeTime
 			40,							///Damage

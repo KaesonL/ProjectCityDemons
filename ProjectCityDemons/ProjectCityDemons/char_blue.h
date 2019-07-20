@@ -66,12 +66,17 @@ public:
 		walkSpeed = copy->walkSpeed;
 		airAccel = copy->airAccel;
 		jumpForce = copy->jumpForce;
+		jumpForceX = copy->jumpForceX;
 		jumpFrames = copy->jumpFrames;
 		dashLength = copy->dashLength;
 		prejumpLength = copy->prejumpLength;
 		airJumps = jumpsLeft = 1;
 		hitstun = copy->hitstun;
 		hitframes = copy->hitframes;
+		bounceframes = copy->bounceframes;
+		leftWall = copy->leftWall;
+		rightWall = copy->rightWall;
+		floor = copy->floor;
 
 		//set combo stuff
 		comboCount = 0;
@@ -110,7 +115,7 @@ public:
 		}
 	}
 
-	void hit(Hitbox* hitBy) {
+	void onHit(Hitbox* hitBy, unsigned int scaling) {
 		if (action == ACTION_G_METEOR_ALT && cancel) {
 			// delete all hitboxes
 			for (int i = 0; i < (int)activeHitboxes.size(); i++) {
@@ -123,7 +128,7 @@ public:
 			gMeteorAlt2();
 		}
 		else
-			Character::onHit(hitBy);
+			Character::onHit(hitBy, scaling);
 	}
 
 	void update(int t, InputHandler* inputs, unsigned int playerNum) {

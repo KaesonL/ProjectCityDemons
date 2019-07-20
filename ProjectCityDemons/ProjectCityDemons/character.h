@@ -84,12 +84,14 @@ public:
 		walkSpeed = copy->walkSpeed;
 		airAccel = copy->airAccel;
 		jumpForce = copy->jumpForce;
+		jumpForceX = copy->jumpForceX;
 		jumpFrames = copy->jumpFrames;
 		dashLength = copy->dashLength;
 		prejumpLength = copy->prejumpLength;
 		airJumps = jumpsLeft = 1;
 		hitstun = copy->hitstun;
 		hitframes = copy->hitframes;
+		bounceframes = copy->bounceframes;
 
 		//set combo stuff
 		comboCount = 0;
@@ -160,14 +162,14 @@ public:
 	virtual Transform aDashB();
 	virtual Transform gHit();
 	virtual Transform aHit();
-	//virtual Transform Launched_Bounce();
-	//virtual Transform Launched_Knockdown();
-	//virtual Transform Knockdown();
-	//virtual Transform Getup();
-	//virtual Transform Bounce_Ground();
-	//virtual Transform Bounce_Wall();
+	virtual Transform Launched_Bounce();
+	virtual Transform Launched_Knockdown();
+	virtual Transform Knockdown();
+	virtual Transform Getup();
+	virtual Transform Bounce_Ground();
+	virtual Transform Bounce_Wall();
 
-	virtual void onHit(Hitbox* hitBy);
+	virtual void onHit(Hitbox* hitBy, unsigned int scaling);
 
 	//3 atks
 	virtual Transform gBasic() { return Transform(); }
@@ -188,20 +190,14 @@ public:
 
 	//----------------------------------------------------------
 	virtual void comboAdd() {
-		if (comboTimer < comboMaxTime) {
-			//add grey hp
-			if (currentHealth < greyHealth) {
-				currentHealth += regenSpeed; // passive health regen 2x as fast when u get hits
-			}
-			comboCount++;
-			resetTimer();
+		//add grey hp
+		if (currentHealth < greyHealth) {
+			currentHealth += regenSpeed; // passive health regen 2x as fast when u get hits
 		}
-		else {
-			comboClear();
-			resetTimer();
-		}
-		//std::cout << "Count: " << comboCount << " Meter: " << currentHealth << std::endl;
+		comboCount++;
+		resetTimer();
 	}
+
 	void comboClear() { comboCount = 0; }
 	void resetMeter() { greyHealth = currentHealth = maxHealth; comboClear(); }
 	void comboTick() {
@@ -231,6 +227,8 @@ public:
 	float regenSpeed = 0.05f;
 	float greyDrainSpeed = 0.2f;
 
+	unsigned int getComboCount() { return comboCount; }
+
 protected:
 	//model
 
@@ -259,6 +257,7 @@ protected:
 	unsigned int airJumps;
 	unsigned int hitstun;
 	unsigned int hitframes;
+	unsigned int bounceframes;
 
 	//combo stuff
 	unsigned int comboCount;//counts hits in a row, resets after x time

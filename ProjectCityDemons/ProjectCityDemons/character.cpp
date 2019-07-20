@@ -55,39 +55,22 @@ void Character::update(int t, InputHandler* inputs, unsigned int playerNum) {
 	//COMBO
 	comboTick();
 
-	////meter flame
-	//if ((currentHealth <= (maxHealth * 0.25f) && action != ACTION_HIT && action != ACTION_IN_NET) || action == ACTION_RESPAWN) {
-	//	partiQueue.push(METERFLAME);						//$$$
-	//}
-
 	//actual update
 	force.x = 0;
 	transform = actionHandler(inputs, playerNum);
-	if (action != ACTION_A_DASHB && action != ACTION_A_DASHB) {
+	if (action != ACTION_A_DASHB && action != ACTION_A_DASHF && action != ACTION_G_DASHB && action != ACTION_G_DASHF) {
 
 		//physics update
 		force = glm::vec3(force.x, 0 - gravity, 0);
 		acceleration = force / mass;
 		velocity = velocity + (acceleration);
 
-		//max speed
-		if (velocity.x > maxSpeed)
-			velocity.x = maxSpeed;
-		if (velocity.x < (0 - maxSpeed))
-			velocity.x = (0 - maxSpeed);
+		////max speed
+		//if (velocity.x > maxSpeed)
+		//	velocity.x = maxSpeed;
+		//if (velocity.x < (0 - maxSpeed))
+		//	velocity.x = (0 - maxSpeed);
 
-		//friction
-		if (position.y <= 0.0f && ((!inputs->getButton(playerNum, MyInputs::Right) && !inputs->getButton(playerNum, MyInputs::Left)) || ((action != ACTION_A_DASHB && action != ACTION_A_DASHB) && action != ACTION_WALKF && action != ACTION_WALKB && action != ACTION_PREJUMP && action != ACTION_JUMP))) {
-			if (action != ACTION_G_BASIC_ALT)
-				velocity.x = velocity.x * 0.7f;
-			else
-				velocity.x = velocity.x * 0.95f;
-
-		}
-		if (position.y > 0.0f && (!inputs->getButtonDown(playerNum, MyInputs::Right) && !inputs->getButtonDown(playerNum, MyInputs::Left))) {
-			velocity.x = velocity.x * 0.95f;
-		}
-		
 		if (dashTimer < 100)
 			dashTimer++;
 	}
@@ -299,30 +282,75 @@ std::vector<Hitbox*> Character::getHurtboxes()
 }
 
 //called on hit
-void Character::onHit(Hitbox* hitBy) {
+void Character::onHit(Hitbox* hitBy, unsigned int comboCount) {
+
 	float result;
-	if (getPosition().y == floor && hitBy->getKnockback() < 7)
+	//calculate power w/ scaling
+	result = hitBy->getPower() + ((hitBy->getScaling()*0.01f) * comboCount); ///power + (sclaing*combo/10)
+	//if grounded and power below 5, stay grounded
+	if (getPosition().y <= floor && result < 5)
 		result = 0;
-	else if (!hitBy->facingRight) 
-		result = 0.035f;//base launch multiplier (kb = 1)
-	else 
-		result = -0.035f;
 
 	facingRight = !(hitBy->facingRight);
-	float xComp = hitBy->getKnockback() * cos((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
-	float yComp = hitBy->getKnockback() * sin((180.0f - hitBy->getAngle()) * 3.14f / 180.0f);//*0.0174772222222222f);
+	float xComp = cos((180.0f - hitBy->angle) * 3.14f / 180.0f);
+	float yComp = sin((180.0f - hitBy->angle) * 3.14f / 180.0f);
 
-	glm::vec3 add(result * xComp, abs(result) * yComp, 0);
-	hitForce = add;
-	if (result == 0)
+	if (result <= 0) {
 		action = ACTION_G_HIT;
-	else
+		hitForce.x = 0;
+		hitForce.y = 0;
+	}
+	else if (result <= 10) {
 		action = ACTION_A_HIT;
+		hitForce.y = 0.05f + (result * 0.01f);
+		if (facingRight)
+			hitForce.x = -0.1f - (result * 0.01f);
+		else
+			hitForce.x = 0.1f + (result * 0.01f);
+	}
+	else if (result <= 20) {
+		action = ACTION_LAUNCHED_B;
+		//hitForce.x = 5 * xComp;
+		//hitForce.y = 5 * yComp;
+		if (hitBy->angle > 0) {
+			hitForce.y = 0.1f;
+			if (facingRight)
+				hitForce.x = -0.5f;
+			else
+				hitForce.x = 0.5f;
+		}
+		else {
+			hitForce.y = -0.3f;
+			if (facingRight)
+				hitForce.x = -0.03f;
+			else
+				hitForce.x = 0.03f;
+		}
+	}
+	else {//if a bouncer
+		action = ACTION_LAUNCHED_K;
+		//hitForce.x = 5 * xComp;
+		//hitForce.y = 5 * yComp;
+		if (hitBy->angle > 0) {
+			hitForce.y = 0.1f;
+			if (facingRight)
+				hitForce.x = -0.5f;
+			else
+				hitForce.x = 0.5f;
+		}
+		else {
+			hitForce.y = -0.3f;
+			if (facingRight)
+				hitForce.x = -0.03f;
+			else
+				hitForce.x = 0.03f;
+		}
+	}
 
 	index = 0;
 	aniTimer = 0;
 	interuptable = false;
-	activeFrames = unsigned int(hitframes + hitstun + hitBy->getKnockback());//
+	activeFrames = unsigned int(hitframes + hitstun + hitBy->getPower());//
 	currentFrame = 1;
 	currentHealth -= hitBy->getDamage();
 
@@ -459,12 +487,12 @@ Transform Character::currentAction()
 	else if (action == ACTION_A_DASHB) {return aDashB();}
 	else if (action == ACTION_G_HIT) { return gHit(); }
 	else if (action == ACTION_A_HIT) { return aHit(); }
-	//else if (action == ACTION_LAUNCHED_B) { return Launched_Bounce(); }
-	//else if (action == ACTION_LAUNCHED_K) { return Launched_Knockdown(); }
-	//else if (action == ACTION_KNOCKDOWN) { return Knockdown(); }
-	//else if (action == ACTION_GETUP) { return Getup(); }
-	//else if (action == ACTION_BOUNCEG) {return Bounce_Ground();}
-	//else if (action == ACTION_BOUNCEW) {return Bounce_Wall();}
+	else if (action == ACTION_LAUNCHED_B) { return Launched_Bounce(); }
+	else if (action == ACTION_LAUNCHED_K) { return Launched_Knockdown(); }
+	else if (action == ACTION_KNOCKDOWN) { return Knockdown(); }
+	else if (action == ACTION_GETUP) { return Getup(); }
+	else if (action == ACTION_BOUNCEG) {return Bounce_Ground();}
+	else if (action == ACTION_BOUNCEW) {return Bounce_Wall();}
 	else if (action == ACTION_G_BASIC) {return gBasic();}
 	else if (action == ACTION_G_METEOR) { return gMeteor(); }
 	else if (action == ACTION_G_CLEAR) { return gClear(); }
@@ -488,10 +516,13 @@ Transform Character::Idle()
 	if (interuptable == true && action != ACTION_IDLE) {
 		interuptable = true;
 		action = ACTION_IDLE;
-		activeFrames = 27;
+		activeFrames = 40;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
+		velocity.x = 0;
+		acceleration.x = 0;
+		force.x = 0;
 	}
 	//Auto Finish
 	if (action == ACTION_IDLE && currentFrame >= activeFrames) {
@@ -599,14 +630,11 @@ Transform Character::WalkF(bool held)//will always be true if called from press,
 		break;
 	}
 	//Actions Every Frame
-	int direction = (int)facingRight;
-	if (facingRight == 0) {
-		direction = -1;
-		partiQueue.push(RDASHDUST);
+	if (facingRight) {
+		velocity.x = walkSpeed;
 	}
-	else 
-		partiQueue.push(LDASHDUST);
-	force.x = direction * walkSpeed;
+	else
+		velocity.x = walkSpeed * -1.0f;
 	currentFrame++;
 	return result;
 }
@@ -642,11 +670,11 @@ Transform Character::WalkB(bool held)//will always be true if called from press,
 		break;
 	}
 	//Actions Every Frame
-	int direction = (int)(!facingRight);
 	if (facingRight) {
-		direction = -1;
+		velocity.x = walkSpeed * -1.0f;
 	}
-	force.x = direction * walkSpeed;
+	else
+		velocity.x = walkSpeed;
 	currentFrame++;
 	return result;
 }
@@ -659,7 +687,7 @@ Transform Character::gDashF()
 		if (dashTimer < 10) return Idle();//10 frames between dashes
 		interuptable = false;
 		action = ACTION_G_DASHF;
-		activeFrames = 8;
+		activeFrames = dashLength;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -696,7 +724,7 @@ Transform Character::gDashB()
 		if (dashTimer < 10) return Idle();//10 frames between dashes
 		interuptable = false;
 		action = ACTION_G_DASHB;
-		activeFrames = 8;
+		activeFrames = dashLength;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -734,7 +762,7 @@ Transform Character::aDashF()
 		else if (!usedAirDash2) usedAirDash2 = true;
 		interuptable = false;
 		action = ACTION_A_DASHF;
-		activeFrames = 8;
+		activeFrames = dashLength;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -778,7 +806,7 @@ Transform Character::aDashB()
 		else if (!usedAirDash2) usedAirDash2 = true;
 		interuptable = false;
 		action = ACTION_A_DASHB;
-		activeFrames = 8;
+		activeFrames = dashLength;
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
@@ -852,6 +880,7 @@ Transform Character::aHit()
 		currentFrame = 1;
 		aniTimer = 0;
 		index = 0;
+		position.y += 0.01f;
 	}
 	//Auto Finish
 	if (currentFrame >= activeFrames) {
@@ -862,15 +891,136 @@ Transform Character::aHit()
 	}
 	//Actions Per Frame
 	if (currentFrame < hitframes) {
-		velocity.y = 0.8f;
+		velocity.y = hitForce.y;
 	}
-	int direction = (int)!facingRight;
-	if (facingRight)
-		direction = -1;
-	velocity.x = (float)direction * 0.1f;
+	velocity.x = hitForce.x;
 	currentFrame++;
 	return result;
 }
+
+Transform Character::Launched_Bounce()
+{
+	Transform result;
+	//Called First Frame
+	if (action != ACTION_LAUNCHED_B) {
+		interuptable = false;
+		action = ACTION_LAUNCHED_B;
+		activeFrames = hitstun + hitframes;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+		position.y += 0.05f;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		if (position.y <= this->floor) return Idle();
+		else return Fall();
+	}
+	else if (position.y <= this->floor && (abs(velocity.x) <= 0.05f)) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Bounce_Ground();
+	}
+	else if ((position.x <= this->leftWall || position.x >= this->rightWall) && (abs(velocity.y) <= 0.1f)) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Bounce_Wall();
+	}
+	//Actions Per Frame
+	if (currentFrame < hitframes) {
+		velocity.y = hitForce.y;
+	}
+	velocity.x = hitForce.x;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::Bounce_Wall()
+{
+	Transform result;
+	//Called First Frame
+	if (action != ACTION_BOUNCEW) {
+		interuptable = false;
+		action = ACTION_BOUNCEW;
+		activeFrames = bounceframes;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		if (position.y <= this->floor) return Idle();
+		else return Fall();
+	}
+	//Actions Per Frame
+	velocity.x = hitForce.x * -1.0f;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::Bounce_Ground()
+{
+	Transform result;
+	//Called First Frame
+	if (action != ACTION_BOUNCEG) {
+		interuptable = false;
+		action = ACTION_BOUNCEG;
+		activeFrames = bounceframes;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		if (position.y <= this->floor) return Idle();
+		else return Fall();
+	}
+	//Actions Per Frame
+	velocity.y = hitForce.y * -1.0f;
+	currentFrame++;
+	return result;
+}
+
+Transform Character::Launched_Knockdown()
+{
+	Transform result;
+	//Called First Frame
+	if (action != ACTION_LAUNCHED_K) {
+		interuptable = false;
+		action = ACTION_LAUNCHED_K;
+		activeFrames = hitstun + hitframes *2;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+		position.y += 0.05f;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		if (position.y <= this->floor) return Idle();
+		else return Fall();
+	}
+	else if (position.y <= this->floor) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Knockdown();
+	}
+	//Actions Per Frame
+	if (currentFrame < hitframes) {
+		velocity.y = hitForce.y;
+	}
+	velocity.x = hitForce.x;
+	currentFrame++;
+	return result;
+}
+
 
 Transform Character::PreJump()
 {
@@ -901,8 +1051,8 @@ Transform Character::Jump()
 {
 	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JUMP) {
-		if (jumpsLeft == 0 && position.x > this->floor) return Fall();//10 frames between dashes
-		if (position.x > this->floor) jumpsLeft--;
+		if (jumpsLeft == 0 && position.y > this->floor) return Fall();//10 frames between dashes
+		if (position.y > this->floor) jumpsLeft--;
 		action = ACTION_JUMP;
 		activeFrames = jumpFrames;
 		currentFrame = 1;
@@ -930,8 +1080,8 @@ Transform Character::JumpF()
 {
 	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JUMPF) {
-		if (jumpsLeft == 0 && position.x > this->floor) return Fall();//10 frames between dashes
-		if (position.x > this->floor) jumpsLeft--;
+		if (jumpsLeft == 0 && position.y > this->floor) return Fall();//10 frames between dashes
+		if (position.y > this->floor) jumpsLeft--;
 		action = ACTION_JUMPF;
 		activeFrames = jumpFrames;
 		currentFrame = 1;
@@ -947,12 +1097,12 @@ Transform Character::JumpF()
 			return Fall();
 		}
 
-		int direction = (int)facingRight;
-		if (!facingRight)
-			direction = -1;
+		if (facingRight)
+			velocity.x = jumpForceX;
+		else 
+			velocity.x = jumpForceX * -1.0f;
 		//stuff goes here
 		velocity.y = jumpForce;
-		velocity.x = jumpForceX * (float)direction;
 		currentFrame++;
 	}
 	return result;
@@ -962,8 +1112,8 @@ Transform Character::JumpB()
 {
 	Transform result = Transform();
 	if (interuptable == true && action != ACTION_JUMPB) {
-		if (jumpsLeft == 0 && position.x > this->floor) return Fall();//10 frames between dashes
-		if (position.x > this->floor) jumpsLeft--;
+		if (jumpsLeft == 0 && position.y > this->floor) return Fall();//10 frames between dashes
+		if (position.y > this->floor) jumpsLeft--;
 		action = ACTION_JUMPB;
 		activeFrames = jumpFrames;
 		currentFrame = 1;
@@ -979,12 +1129,12 @@ Transform Character::JumpB()
 			return Fall();
 		}
 
-		int direction = (int)(!facingRight);
-		if (facingRight)
-			direction = -1;
+		if (!facingRight)
+			velocity.x = jumpForceX;
+		else
+			velocity.x = jumpForceX * -1.0f;
 		//stuff goes here
 		velocity.y = jumpForce;
-		velocity.x = jumpForceX * (float)direction;
 		currentFrame++;
 	}
 	return result;
@@ -1012,5 +1162,69 @@ Transform Character::Fall()
 
 		currentFrame++;
 	}
+	return result;
+}
+
+Transform Character::Knockdown()
+{
+	Transform result;
+	//Called First Frame
+	if (action != ACTION_KNOCKDOWN) {
+		interuptable = false;
+		action = ACTION_KNOCKDOWN;
+		activeFrames = 100;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+		velocity.y = 0;
+		acceleration.y = 0;
+		force.y = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Getup();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	velocity.x *= 0.95f;
+	currentFrame++;
+	return result;
+}
+
+
+Transform Character::Getup()
+{
+	Transform result;
+	//Called First Frame
+	if (action != ACTION_GETUP) {
+		interuptable = false;
+		action = ACTION_GETUP;
+		activeFrames = 20;
+		currentFrame = 1;
+		aniTimer = 0;
+		index = 0;
+		velocity.x = 0;
+		acceleration.x = 0;
+		force.x = 0;
+	}
+	//Auto Finish
+	if (currentFrame >= activeFrames) {
+		interuptable = true;
+		action = ACTION_PLACEHOLDER;
+		return Idle();
+	}
+	//Actions Per Frame
+	switch (currentFrame) {
+	case 1:
+	default:
+		break;
+	}
+	currentFrame++;
 	return result;
 }

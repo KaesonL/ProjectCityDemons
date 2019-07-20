@@ -154,21 +154,6 @@ bool Scene::update()
 		Players[1]->setPosition(Players[1]->getPosition() + glm::vec3(((diffx / abs(diffx))*-0.01f), 0, 0));
 	}
 
-	// Rumble first 5 frames of either player being hit;
-	for (int i = 0; i < 2; i++) {
-		if (Players[i]->isHit() && Players[i]->currentFrame < 6) {
-			Controllers->SetVibration(0, 10, 10);//controller 0, power 10 on left and right
-			Controllers->SetVibration(1, 10, 10);//controller 1, power 10 on left and right
-			GameCamera.setRumble(4, 0.04f);
-			Players[i]->activeTexture = &(Players[i]->hurtTexture);
-		}
-		else if (Players[i]->isHit() && Players[i]->currentFrame == 7) {
-			Controllers->SetVibration(0, 0, 0);//controller 0, power 0 on left and right (off)
-			Controllers->SetVibration(1, 0, 0);//controller , power 0 on left and right (off)
-			Players[i]->activeTexture = &(Players[i]->bodyTexture);
-		}
-	}
-
 	// Hitbox Collision
 	///for each player
 	for (unsigned int attacker = 0; attacker < 2; attacker++) {
@@ -183,7 +168,7 @@ bool Scene::update()
 				if (glm::length(diff) < size) {
 					Controllers->SetVibration(attacker, 10, 10);
 					Controllers->SetVibration(defender, 10, 10);
-					Sleep(40 + (int)(Players[attacker]->getHitboxes()[i]->getKnockback() * 3));
+					Sleep(40 + (int)(Players[attacker]->getHitboxes()[i]->getPower()));
 					Controllers->SetVibration(attacker, 0, 0);
 					Controllers->SetVibration(defender, 0, 0);
 					/// if Blocking & in an action where they can block
@@ -195,18 +180,17 @@ bool Scene::update()
 					}
 					///if not Blocking (hit)
 					else {
-						if (Players[defender]->action != Players[defender]->ACTION_G_HIT && Players[defender]->action != Players[defender]->ACTION_A_HIT) {///if defender not in hitstun, reset combo counter
+						if (Players[defender]->action != Players[defender]->ACTION_G_HIT && Players[defender]->action != Players[defender]->ACTION_A_HIT
+							&& Players[defender]->action != Players[defender]->ACTION_LAUNCHED_K && Players[defender]->action != Players[defender]->ACTION_LAUNCHED_B
+							&& Players[defender]->action != Players[defender]->ACTION_BOUNCEG && Players[defender]->action != Players[defender]->ACTION_BOUNCEW) {///if defender not in hitstun, reset combo counter
 							Players[attacker]->comboClear();
 							Players[attacker]->resetTimer();
 						}
 						else {
 							Players[attacker]->comboAdd();
 						}
-						Players[defender]->onHit(Players[attacker]->getHitboxes()[i]);
+						Players[defender]->onHit(Players[attacker]->getHitboxes()[i], Players[attacker]->getComboCount());
 					}
-					///stall
-					Players[attacker]->setVelocity(glm::vec3(Players[attacker]->getVelocity().x, 0.08f, 0.0f));
-					Players[defender]->setVelocity(glm::vec3(Players[defender]->getVelocity().x, 0.0f, 0.0f));
 					///delete hitbox
 					Players[attacker]->getHitboxes()[i]->setDone();
 					/// for loops

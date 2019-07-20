@@ -226,7 +226,7 @@ void Game::initializeGame()
 	//Sound Stuff
 	//=================================================================//
 
-	gameTheme.Load("./Assets/Media/GameMusic.wav", false, true);
+	gameTheme.Load("./Assets/Media/GameMusic.mp3", false, true);
 	select.Load("./Assets/Media/SelectSound.wav", true, false);
 	menuMove.Load("./Assets/Media/MenuMove.wav", true, false);
 	defaultPos = { 0.0f, 0.0f, 0.0f };

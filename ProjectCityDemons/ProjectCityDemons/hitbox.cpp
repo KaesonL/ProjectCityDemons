@@ -1,12 +1,13 @@
 #include "hitbox.h"
 
-Hitbox::Hitbox(glm::vec3 _position, float _size, float _knockback, float _angleDeg, unsigned int _activeFrames, float _dmg, glm::vec3 _velocity)
+Hitbox::Hitbox(glm::vec3 _position, float _size, float _power, float _scaling, float _angle, unsigned int _activeFrames, float _dmg, glm::vec3 _velocity)
 {
 	//set all values
 	position = _position;
 	size = _size;
-	knockback = _knockback;
-	angleDeg = _angleDeg;
+	power = _power;
+	scaling = _scaling;
+	angle = _angle;
 	velocity = _velocity;
 	activeFrames = _activeFrames;
 	currentFrame = 1;
@@ -24,8 +25,8 @@ Hitbox::Hitbox(glm::vec3 _position, float _size)
 	//set all values
 	position = _position;
 	size = _size;
-	knockback = 0;
-	angleDeg = 0;
+	power = 0;
+	scaling = 0;
 	velocity = glm::vec3();
 	activeFrames = 0;
 	currentFrame = 1;
@@ -142,12 +143,12 @@ void Hitbox::setDone()
 	currentFrame = activeFrames + 1;
 }
 
-float Hitbox::getAngle()
+float Hitbox::getScaling()
 {
-	return angleDeg;
+	return scaling;
 }
 
-float Hitbox::getKnockback()
+float Hitbox::getPower()
 {
-	return knockback;
+	return power;
 }
